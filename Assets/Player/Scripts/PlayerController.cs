@@ -8,7 +8,7 @@ namespace Player.Scripts
         [SerializeField] private float jumpForce = 3f;
         [SerializeField] private float gravity = -9.81f;
         private Vector3 _currentMovement;
-        [SerializeField] public float smoothTime = 0.6f;
+        [SerializeField] public float smoothTime = 0.2f;
 
         private CharacterController _characterController;
         private InputHandler _inputHandler;
