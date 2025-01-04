@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Player.Scripts
@@ -5,7 +6,7 @@ namespace Player.Scripts
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private float walkSpeed = 3f;
-        [SerializeField] private float jumpForce = 5f;
+        [SerializeField] private float jumpForce = 3f;
         [SerializeField] private float gravity = -9.81f;
         private Vector3 _currentMovement;
     
@@ -31,16 +32,16 @@ namespace Player.Scripts
 
         private void HandleMovement()
         {
-            //TODO Prevent movement while not IsGrounded
-            
-            Vector3 worldDirection = Vector3.zero;
-            Vector3 inputDirection = new Vector3(_inputHandler.MoveInput.x, 0, _inputHandler.MoveInput.y);
-            worldDirection = transform.TransformDirection(inputDirection).normalized;
-        
-            _currentMovement.x = worldDirection.x * walkSpeed;
-            _currentMovement.z = worldDirection.z * walkSpeed;
-            _characterController.Move(_currentMovement * Time.deltaTime);
-            
+            var inputDirection = new Vector3(_inputHandler.MoveInput.x, 0, _inputHandler.MoveInput.y);
+            var worldDirection = transform.TransformDirection(inputDirection).normalized;
+
+            if (_characterController.isGrounded)
+            {
+                _currentMovement.x = worldDirection.x;
+                _currentMovement.z = worldDirection.z;
+            }
+
+            _characterController.Move(_currentMovement * (walkSpeed * Time.deltaTime));
         }
 
         private void HandleJump()
@@ -58,6 +59,5 @@ namespace Player.Scripts
                 _currentMovement.y += gravity * Time.deltaTime;
             }
         }
-    
     }
 }
