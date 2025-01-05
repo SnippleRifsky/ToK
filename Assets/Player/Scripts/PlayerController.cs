@@ -5,6 +5,7 @@ namespace Player.Scripts
     public class PlayerController : MonoBehaviour
     {
         private CharacterController _characterController;
+        private Transform _playerBody;
         private InputHandler _inputHandler;
         private Camera _camera;
 
@@ -28,7 +29,8 @@ namespace Player.Scripts
         {
             _inputHandler = InputHandler.Instance;
             _characterController = GetComponent<CharacterController>();
-            _camera = Camera.main;
+            _camera = GetComponentInChildren<Camera>();
+            _playerBody = GetComponentInChildren<MeshRenderer>().transform;
         }
 
         private void Update()
@@ -85,7 +87,7 @@ namespace Player.Scripts
         {
             if (_inputHandler.MoveInput == Vector2.zero) return;
             var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
-            transform.forward = Vector3.Slerp(transform.forward, targetRotation, Time.deltaTime / smoothTime);
+            _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
         }
     }
 }
