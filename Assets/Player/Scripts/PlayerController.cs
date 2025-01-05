@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Player.Scripts
 {
@@ -6,11 +7,13 @@ namespace Player.Scripts
     {
         private CharacterController _characterController;
         private Transform _playerBody;
-        private InputHandler _inputHandler;
         private Camera _camera;
 
         [Header("Movement Parameters")] [SerializeField]
         private float walkSpeed = 3f;
+
+        private InputAction _moveAction;
+        private InputAction _jumpAction;
 
         [Header("Jump Parameters")] [SerializeField]
         private float jumpForce = 3f;
@@ -27,7 +30,8 @@ namespace Player.Scripts
 
         private void Awake()
         {
-            _inputHandler = InputHandler.Instance;
+            _moveAction = InputSystem.actions.FindAction("Move");
+            _jumpAction = InputSystem.actions.FindAction("Jump");
             _characterController = GetComponent<CharacterController>();
             _camera = GetComponentInChildren<Camera>();
             _playerBody = GetComponentInChildren<MeshRenderer>().transform;
@@ -48,17 +52,15 @@ namespace Player.Scripts
         private void HandleMovement()
         {
             //TODO un-fuck this abomination
+            var moveInput = _moveAction.ReadValue<Vector2>();
 
             if (_characterController.isGrounded)
             {
                 _cameraForward = _camera.transform.forward;
                 _cameraRight = _camera.transform.right;
 
-                var verticalInput = _inputHandler.MoveInput.y;
-                var horizontalInput = _inputHandler.MoveInput.x;
-
-                var camForwardVector = _cameraForward * verticalInput;
-                var camRightVector = _cameraRight * horizontalInput;
+                var camForwardVector = _cameraForward * moveInput.y;
+                var camRightVector = _cameraRight * moveInput.x;
 
                 _camDirection = camForwardVector + camRightVector;
                 _camDirection.Normalize();
@@ -75,7 +77,7 @@ namespace Player.Scripts
             if (_characterController.isGrounded)
             {
                 _currentMovement.y = -0.5f;
-                if (_inputHandler.JumpTriggered) _currentMovement.y = jumpForce;
+                if (_jumpAction.IsPressed()) _currentMovement.y = jumpForce;
             }
             else
             {
@@ -85,7 +87,7 @@ namespace Player.Scripts
 
         private void HandleRotation()
         {
-            if (_inputHandler.MoveInput == Vector2.zero) return;
+            if (_moveAction.ReadValue<Vector2>() == Vector2.zero) return;
             var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
             _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
         }
