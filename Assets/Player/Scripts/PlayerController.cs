@@ -24,9 +24,10 @@ namespace Player.Scripts
         [Header("Rotation Parameters")] [SerializeField]
         public float smoothTime = 0.2f;
 
-        private Vector3 _cameraForward;
-        private Vector3 _cameraRight;
-        private Vector3 _camDirection;
+        private Transform _tracker;
+        private Vector3 _trackerForward;
+        private Vector3 _trackerRight;
+        private Vector3 _trackerDirection;
 
         private void Awake()
         {
@@ -34,6 +35,7 @@ namespace Player.Scripts
             _jumpAction = InputSystem.actions.FindAction("Jump");
             _characterController = GetComponent<CharacterController>();
             _camera = GetComponentInChildren<Camera>();
+            _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
             _playerBody = GetComponentInChildren<MeshRenderer>().transform;
         }
 
@@ -51,22 +53,23 @@ namespace Player.Scripts
 
         private void HandleMovement()
         {
+            _tracker.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
             //TODO un-fuck this abomination
             var moveInput = _moveAction.ReadValue<Vector2>();
 
             if (_characterController.isGrounded)
             {
-                _cameraForward = _camera.transform.forward;
-                _cameraRight = _camera.transform.right;
+                _trackerForward = _tracker.transform.forward;
+                _trackerRight = _tracker.transform.right;
 
-                var camForwardVector = _cameraForward * moveInput.y;
-                var camRightVector = _cameraRight * moveInput.x;
+                var trackerForwardVector = _trackerForward * moveInput.y;
+                var trackerRightVector = _trackerRight * moveInput.x;
 
-                _camDirection = camForwardVector + camRightVector;
-                _camDirection.Normalize();
+                _trackerDirection = trackerForwardVector + trackerRightVector;
+                _trackerDirection.Normalize();
 
-                _currentMovement.x = _camDirection.x;
-                _currentMovement.z = _camDirection.z;
+                _currentMovement.x = _trackerDirection.x;
+                _currentMovement.z = _trackerDirection.z;
             }
 
             _characterController.Move(_currentMovement * (walkSpeed * Time.deltaTime));
