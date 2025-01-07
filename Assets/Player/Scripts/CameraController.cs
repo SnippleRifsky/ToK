@@ -24,9 +24,9 @@ public class CameraController : MonoBehaviour
 
     [Header("Camera Collision Parameters")] [SerializeField]
     private LayerMask layerMask;
-
-    private const float CamClipOffset = 0.55f;
-    private const float DistanceOffset = -0.2f;
+    
+    private readonly float _distanceOffset = -0.2f;
+    private readonly Vector3 _rayDirectionYOffset = new(0f, -0.2f, 0f);
     private RaycastHit _hit;
 
     [Header("Debug Variables")] [SerializeField]
@@ -74,9 +74,11 @@ public class CameraController : MonoBehaviour
     {
         var playerPosition = gameObject.transform.position;
         var camRay = new Ray(playerPosition,
-            (_camera.transform.position - gameObject.transform.position).normalized);
+            (_camera.transform.position - gameObject.transform.position + _rayDirectionYOffset).normalized);
 
-        if (!Physics.SphereCast(camRay, 0.5f, out _hit, _distance + DistanceOffset, layerMask)) return;
-        _camera.transform.position = _hit.point + _hit.normal.normalized * CamClipOffset;
+        if (isDebug) Debug.DrawRay(camRay.origin, camRay.direction * (_distance + _distanceOffset), Color.red);
+
+        if (!Physics.Raycast(camRay, out _hit, _distance + _distanceOffset, layerMask)) return;
+        _camera.transform.position = _hit.point + new Vector3(0f, 0.2f, 0f);
     }
 }
