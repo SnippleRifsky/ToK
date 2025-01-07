@@ -7,7 +7,7 @@ namespace Player.Scripts
     {
         private CharacterController _characterController;
         private Transform _playerBody;
-        private Camera _camera;
+        private Camera _cameraTracker;
 
         [Header("Movement Parameters")] [SerializeField]
         private float walkSpeed = 3f;
@@ -25,6 +25,7 @@ namespace Player.Scripts
         public float smoothTime = 0.2f;
 
         private Vector3 _cameraForward;
+        private Vector3 _cameraUp;
         private Vector3 _cameraRight;
         private Vector3 _camDirection;
 
@@ -33,7 +34,7 @@ namespace Player.Scripts
             _moveAction = InputSystem.actions.FindAction("Move");
             _jumpAction = InputSystem.actions.FindAction("Jump");
             _characterController = GetComponent<CharacterController>();
-            _camera = GetComponentInChildren<Camera>();
+            _cameraTracker = GetComponentInChildren<Camera>();
             _playerBody = GetComponentInChildren<MeshRenderer>().transform;
         }
 
@@ -56,10 +57,12 @@ namespace Player.Scripts
 
             if (_characterController.isGrounded)
             {
-                _cameraForward = _camera.transform.forward;
-                _cameraRight = _camera.transform.right;
-
-                var camForwardVector = _cameraForward * moveInput.y;
+                _cameraForward = _cameraTracker.transform.forward;
+                _cameraUp = _cameraTracker.transform.up;
+                _cameraRight = _cameraTracker.transform.right;
+                
+                // using camera.up to prevent loss of speed when camera is at steep angles
+                var camForwardVector = (_cameraForward + _cameraUp) * moveInput.y;
                 var camRightVector = _cameraRight * moveInput.x;
 
                 _camDirection = camForwardVector + camRightVector;
