@@ -12,6 +12,10 @@ namespace Player.Scripts
         [Header("Movement Parameters")] [SerializeField]
         private float walkSpeed = 3f;
 
+        private readonly float _slopeSlideSpeed = 2f;
+        private readonly float _groundRayDistance = 1f;
+        private RaycastHit _slopeHit;
+
         private InputAction _moveAction;
         private InputAction _jumpAction;
 
@@ -72,6 +76,8 @@ namespace Player.Scripts
                 _currentMovement.z = _trackerDirection.z;
             }
 
+            if (OnSteepSlope()) SteepSlopeMovement();
+
             _characterController.Move(_currentMovement * (walkSpeed * Time.deltaTime));
         }
 
@@ -94,5 +100,30 @@ namespace Player.Scripts
             var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
             _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
         }
+
+        #region SlopeMovement
+
+        private bool OnSteepSlope()
+        {
+            if (!_characterController.isGrounded) return false;
+            var slopeRay = new Ray(_playerBody.position, Vector3.down);
+
+            if (!Physics.SphereCast(slopeRay, _characterController.radius, out _slopeHit,
+                    _characterController.height / 2 * _groundRayDistance)) return false;
+
+            var slopeAngle = Vector3.Angle(Vector3.up, _slopeHit.normal);
+            return slopeAngle >= _characterController.slopeLimit;
+        }
+
+        private void SteepSlopeMovement()
+        {
+            var slopeDirection = Vector3.up - _slopeHit.normal * Vector3.Dot(Vector3.up, _slopeHit.normal);
+            var slideSpeed = walkSpeed - _slopeSlideSpeed;
+
+            _currentMovement = slopeDirection * -slideSpeed;
+            _currentMovement.y = _currentMovement.y - _slopeHit.point.y;
+        }
+
+        #endregion
     }
 }
