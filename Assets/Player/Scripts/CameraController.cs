@@ -37,6 +37,8 @@ public class CameraController : MonoBehaviour
         _lookAction = InputSystem.actions.FindAction("Look");
         _zoomAction = InputSystem.actions.FindAction("Zoom");
         _camera = GetComponentInChildren<Camera>();
+        
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Update()
