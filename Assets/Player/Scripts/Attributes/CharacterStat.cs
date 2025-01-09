@@ -7,6 +7,7 @@ using UnityEngine;
 public class CharacterStat
 {
     public float baseValue;
+    public float maxValue;
     public string statName;
     public string statDescription;
 
@@ -35,6 +36,7 @@ public class CharacterStat
         StatModifiers = StatModifiersList.AsReadOnly();
         statName = string.Empty;
         statDescription = string.Empty;
+        maxValue = -1f;
     }
 
     public CharacterStat(float baseValue)
@@ -44,15 +46,17 @@ public class CharacterStat
         StatModifiers = StatModifiersList.AsReadOnly();
         statName = string.Empty;
         statDescription = string.Empty;
+        maxValue = -1f;
     }
     
-    public CharacterStat(float baseValue, string statName)
+    public CharacterStat(float baseValue, float maxValue, string statName)
     {
         this.baseValue = baseValue;
         StatModifiersList = new List<StatModifier>();
         StatModifiers = StatModifiersList.AsReadOnly();
         this.statName = statName;
         statDescription = string.Empty;
+        this.maxValue = maxValue;
     }
     
     public CharacterStat(float baseValue, string statName, string statDescription)
@@ -62,6 +66,17 @@ public class CharacterStat
         StatModifiers = StatModifiersList.AsReadOnly();
         this.statName = statName;
         this.statDescription = statDescription;
+        maxValue = -1f;
+    }
+    
+    public CharacterStat(float baseValue, float maxValue ,string statName, string statDescription)
+    {
+        this.baseValue = baseValue;
+        StatModifiersList = new List<StatModifier>();
+        StatModifiers = StatModifiersList.AsReadOnly();
+        this.statName = statName;
+        this.statDescription = statDescription;
+        this.maxValue = maxValue;
     }
     
     
@@ -132,6 +147,13 @@ public class CharacterStat
             }
         }
 
-        return (float)Math.Round(moddedValue, 4);
+        if (maxValue > 0 || moddedValue > maxValue)
+        {
+            return maxValue;
+        }
+        else
+        {
+            return (float)Math.Round(moddedValue, 4);
+        }
     }
 }
