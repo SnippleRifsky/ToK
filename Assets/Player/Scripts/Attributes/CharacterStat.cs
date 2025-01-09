@@ -7,6 +7,8 @@ using UnityEngine;
 public class CharacterStat
 {
     public float baseValue;
+    public string statName;
+    public string statDescription;
 
     public virtual float Value
     {
@@ -31,6 +33,8 @@ public class CharacterStat
     {
         StatModifiersList = new List<StatModifier>();
         StatModifiers = StatModifiersList.AsReadOnly();
+        statName = string.Empty;
+        statDescription = string.Empty;
     }
 
     public CharacterStat(float baseValue)
@@ -38,7 +42,29 @@ public class CharacterStat
         this.baseValue = baseValue;
         StatModifiersList = new List<StatModifier>();
         StatModifiers = StatModifiersList.AsReadOnly();
+        statName = string.Empty;
+        statDescription = string.Empty;
     }
+    
+    public CharacterStat(float baseValue, string statName)
+    {
+        this.baseValue = baseValue;
+        StatModifiersList = new List<StatModifier>();
+        StatModifiers = StatModifiersList.AsReadOnly();
+        this.statName = statName;
+        statDescription = string.Empty;
+    }
+    
+    public CharacterStat(float baseValue, string statName, string statDescription)
+    {
+        this.baseValue = baseValue;
+        StatModifiersList = new List<StatModifier>();
+        StatModifiers = StatModifiersList.AsReadOnly();
+        this.statName = statName;
+        this.statDescription = statDescription;
+    }
+    
+    
 
     public virtual void AddModifier(StatModifier modifier)
     {
