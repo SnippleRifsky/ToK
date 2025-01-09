@@ -1,69 +1,111 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using UnityEngine;
 
+[Serializable]
 public class CharacterStat
 {
-    public float BaseValue;
+    public float baseValue;
 
-    public float Value {
+    public virtual float Value
+    {
         get
         {
-            if (!_isDirty) return _originalValue;
-            _originalValue = CalculateModifiedValue();
-            _isDirty = false;
-            return _originalValue;
+            if (!IsDirty || !Mathf.Approximately(baseValue, LastBaseValue)) return OriginalValue;
+            LastBaseValue = baseValue;
+            OriginalValue = CalculateModifiedValue();
+            IsDirty = false;
+            return OriginalValue;
         }
     }
 
-    private bool _isDirty = true;
-    private float _originalValue;
+    protected bool IsDirty = true;
+    protected float OriginalValue;
+    protected float LastBaseValue = float.MinValue;
 
-    private readonly List<StatModifier> _statModifiers;
+    protected readonly List<StatModifier> StatModifiersList;
+    public readonly ReadOnlyCollection<StatModifier> StatModifiers;
+
+    public CharacterStat()
+    {
+        StatModifiersList = new List<StatModifier>();
+        StatModifiers = StatModifiersList.AsReadOnly();
+    }
 
     public CharacterStat(float baseValue)
     {
-        BaseValue = baseValue;
-        _statModifiers = new List<StatModifier>();
+        this.baseValue = baseValue;
+        StatModifiersList = new List<StatModifier>();
+        StatModifiers = StatModifiersList.AsReadOnly();
     }
 
-    public void AddModifier(StatModifier modifier)
+    public virtual void AddModifier(StatModifier modifier)
     {
-        _isDirty = true;
-        _statModifiers.Add(modifier);
-        _statModifiers.Sort(CompareModifiers);
+        IsDirty = true;
+        StatModifiersList.Add(modifier);
+        StatModifiersList.Sort(CompareModifiers);
     }
 
-    private static int CompareModifiers(StatModifier a, StatModifier b)
+    protected virtual int CompareModifiers(StatModifier a, StatModifier b)
     {
-        if (a.Order < b.Order) 
+        if (a.Order < b.Order)
             return -1;
-        else if (a.Order > b.Order)
+        if (a.Order > b.Order)
             return 1;
         return 0;
     }
 
-    public void RemoveModifier(StatModifier modifier)
+    public virtual bool RemoveModifier(StatModifier modifier)
     {
-        _isDirty = true;
-        _statModifiers.Remove(modifier);
+        if (!StatModifiersList.Remove(modifier)) return false;
+        IsDirty = true;
+        return true;
     }
 
-    private float CalculateModifiedValue()
+    public virtual bool RemoveModifierBySource(object source)
     {
-        float moddedValue = BaseValue;
+        var removed = false;
 
-        foreach (var mod in _statModifiers)
+        for (var i = StatModifiersList.Count - 1; i >= 0; i--)
         {
+            if (StatModifiersList[i].Source != source) continue;
+            IsDirty = true;
+            removed = true;
+            StatModifiersList.RemoveAt(i);
+        }
+
+        return removed;
+    }
+
+    protected virtual float CalculateModifiedValue()
+    {
+        var moddedValue = baseValue;
+        float sumPercentAdd = 0;
+
+        for (var index = 0; index < StatModifiersList.Count; index++)
+        {
+            var mod = StatModifiersList[index];
             switch (mod.Type)
             {
                 case StatModType.Flat:
                     moddedValue += mod.Value;
                     break;
-                case StatModType.Percent:
+                case StatModType.PercentMult:
                     moddedValue *= 1 + mod.Value;
                     break;
+                case StatModType.PercentAdd:
+                {
+                    sumPercentAdd += mod.Value;
+                    if (index + 1 < StatModifiersList.Count &&
+                        StatModifiersList[index].Type + 1 == StatModType.PercentAdd) continue;
+                    moddedValue *= 1 + sumPercentAdd;
+                    sumPercentAdd = 0;
+                    break;
+                }
             }
         }
+
         return (float)Math.Round(moddedValue, 4);
     }
 }
