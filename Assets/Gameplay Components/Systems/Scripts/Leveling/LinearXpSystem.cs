@@ -6,8 +6,8 @@ using UnityEngine.Splines;
 [CreateAssetMenu(fileName = "LinearXpSystem", menuName = "RPG Components/ Linear Xp System")]
 public class LinearXpSystem : BaseXpSystem
 {
-    [SerializeField] private int offset = 250;
-    [SerializeField] private float curveGain = 2.64f;
+    [SerializeField] private float offset = 1f;
+    [SerializeField] private float curveGain = 1f;
     private int _levelXpAmount;
     
     public override bool AddXp(int amount)
@@ -17,19 +17,19 @@ public class LinearXpSystem : BaseXpSystem
             Debug.Log($"Failed to add {amount} xp");
             return false;
         }
-        CurrentXp += amount;
-        if (CurrentXp >= _levelXpAmount)
+        
+        if ((CurrentXp + amount) >= _levelXpAmount)
         {
-            if (CurrentXp > _levelXpAmount)
-            {
-                var carryoverXpAmount = CurrentXp - _levelXpAmount;
-                LevelUp();
-                AddXp(carryoverXpAmount);
-                return false;
-            }
+            var carryoverXpAmount = (CurrentXp+amount) - _levelXpAmount;
+            CurrentXp += _levelXpAmount;
             LevelUp();
+            AddXp(carryoverXpAmount);
         }
-        Debug.Log($"Added {amount} xp");
+        else
+        {
+            CurrentXp += amount;
+            Debug.Log($"Added {amount} xp");
+        }
         return true;
     }
 
@@ -54,7 +54,7 @@ public class LinearXpSystem : BaseXpSystem
 
     public override int GetLevelXpRange()
     {
-        _levelXpAmount = (int)Mathf.Round((CurrentLevel * _levelXpAmount) + offset * curveGain);
+        _levelXpAmount = (int)Mathf.Round(Mathf.Pow((CurrentLevel/curveGain), offset));
         Debug.Log($"Xp required for {CurrentLevel}: {_levelXpAmount}");
         return _levelXpAmount;
     }
