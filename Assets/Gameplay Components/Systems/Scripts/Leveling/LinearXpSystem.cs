@@ -2,6 +2,7 @@ using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Splines;
+using UnityEngine.Windows.WebCam;
 
 [CreateAssetMenu(fileName = "LinearXpSystem", menuName = "RPG Components/ Linear Xp System")]
 public class LinearXpSystem : BaseXpSystem
@@ -12,25 +13,33 @@ public class LinearXpSystem : BaseXpSystem
     
     public override bool AddXp(int amount)
     {
-        if (AtLevelCap)
+        var remainingXp = amount;
+
+        while (remainingXp > 0 && !AtLevelCap)
         {
-            Debug.Log($"Failed to add {amount} xp");
-            return false;
+            // Check if this amount will cause a level up
+            if (CurrentXp + remainingXp < _levelXpAmount)
+            {
+                CurrentXp += remainingXp;
+                Debug.Log($"Added {remainingXp} xp");
+                remainingXp = 0;
+            }
+            else
+            {
+                // Calculate how much XP carries over after level up
+                var xpToLevel = _levelXpAmount - CurrentXp;
+                remainingXp -= xpToLevel;
+                CurrentXp = 0;
+                LevelUp();
+            }
         }
-        
-        if ((CurrentXp + amount) >= _levelXpAmount)
+
+        if (remainingXp > 0 && AtLevelCap)
         {
-            var carryoverXpAmount = (CurrentXp+amount) - _levelXpAmount;
-            CurrentXp += _levelXpAmount;
-            LevelUp();
-            AddXp(carryoverXpAmount);
+            Debug.Log($"Couldn't add {remainingXp} xp - at level cap");
         }
-        else
-        {
-            CurrentXp += amount;
-            Debug.Log($"Added {amount} xp");
-        }
-        return true;
+
+        return amount != remainingXp;
     }
 
     public override int XpToNextLevel()
