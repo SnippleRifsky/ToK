@@ -16,7 +16,7 @@ public class LinearXpSystem : BaseXpSystem
         {
             var xpToNextLevel = XpToNextLevel();
             // Check if amount is enough to level up
-            if (remainingXp > xpToNextLevel)
+            if (remainingXp >= xpToNextLevel)
             {
                 remainingXp -= xpToNextLevel;
                 CurrentXp += xpToNextLevel;
