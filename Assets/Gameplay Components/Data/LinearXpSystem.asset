@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: LinearXpSystem
   m_EditorClassIdentifier: 
   offset: 1.7
-  curveGain: 0.1
+  curveGain: 0.095
