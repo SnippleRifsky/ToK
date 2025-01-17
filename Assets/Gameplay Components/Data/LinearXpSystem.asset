@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e083ec013fe4b488504706c6f38b5cb, type: 3}
   m_Name: LinearXpSystem
   m_EditorClassIdentifier: 
-  offset: 1.7
+  offset: 2
   curveGain: 0.095
