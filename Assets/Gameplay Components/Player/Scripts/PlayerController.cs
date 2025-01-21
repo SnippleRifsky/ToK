@@ -94,8 +94,16 @@ namespace Player.Scripts
         private void HandleRotation()
         {
             if (_moveAction.ReadValue<Vector2>() == Vector2.zero) return;
-            var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
-            _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
+            if (_cameraController.IsLocked)
+            {
+                var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
+                _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
+            }
+            else
+            {
+                var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
+                _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
+            }
         }
 
         private Vector3 GetDirection(Transform target)
