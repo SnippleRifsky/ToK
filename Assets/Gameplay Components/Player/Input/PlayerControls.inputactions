@@ -22,24 +22,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Look",
-                    "type": "Value",
-                    "id": "579928a0-89b6-4a51-8cdf-b6d81ab0beee",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Zoom",
-                    "type": "Value",
-                    "id": "7db726ec-27e5-4786-97eb-1da599cc811c",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -108,10 +90,76 @@
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Camera",
+            "id": "abe38fbf-0c20-4915-9e31-8cd41e330a8a",
+            "actions": [
+                {
+                    "name": "Pan",
+                    "type": "Button",
+                    "id": "daa62a5a-eb0c-4fa9-9024-88553756a90c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Cam Lock",
+                    "type": "Button",
+                    "id": "b77c49bc-db51-4212-be44-f98a67063c43",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "d62d0ef9-c184-4f6e-b82d-1f1fadc7ae80",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "2664b0f0-08cd-424b-975c-455a77741659",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "5c846d40-21fa-450e-a7b6-7a07b9767730",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "c331fbdc-e3ab-4ee4-ad6b-54f31fe362f2",
+                    "id": "99f7b40d-aa00-4906-9a4e-1f82f9cb38c4",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cam Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c41e8812-bfd4-4521-bf92-34d87d73e184",
                     "path": "<Mouse>/delta",
                     "interactions": "",
                     "processors": "",
@@ -122,7 +170,7 @@
                 },
                 {
                     "name": "",
-                    "id": "0bb37fdc-513b-4972-a79c-9b76964a28b6",
+                    "id": "fc8e28df-d89d-4509-89d8-0e2b0329ee5a",
                     "path": "<Mouse>/scroll",
                     "interactions": "",
                     "processors": "",

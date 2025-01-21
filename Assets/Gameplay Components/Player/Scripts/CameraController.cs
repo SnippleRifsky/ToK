@@ -5,6 +5,11 @@ public class CameraController : MonoBehaviour
 {
     [Header("Camera Input")] private InputAction _lookAction;
     private InputAction _zoomAction;
+    private InputAction _panAction;
+    private InputAction _camLockAction;
+    public bool IsPanning { get; private set; }
+    public bool IsLocked { get; private set; }
+    private Vector2 _lookInput;
 
     [Header("Camera Movement Parameters")] [SerializeField]
     private float lookSensitivity = 0.5f;
@@ -36,6 +41,8 @@ public class CameraController : MonoBehaviour
     {
         _lookAction = InputSystem.actions.FindAction("Look");
         _zoomAction = InputSystem.actions.FindAction("Zoom");
+        _panAction = InputSystem.actions.FindAction("Pan");
+        _camLockAction = InputSystem.actions.FindAction("Cam Lock");
         _camera = GetComponentInChildren<Camera>();
         
         Cursor.lockState = CursorLockMode.Confined;
@@ -50,16 +57,18 @@ public class CameraController : MonoBehaviour
 
     private void CameraRotation()
     {
-        var lookInput = _lookAction.ReadValue<Vector2>();
+        HandleInput();
+        if (IsPanning || IsLocked)
+        {
+            _currentX += _lookInput.x * lookSensitivity;
+            _currentY += _lookInput.y * lookSensitivity;
 
-        _currentX += lookInput.x * lookSensitivity;
-        _currentY += lookInput.y * lookSensitivity;
+            _currentY = Mathf.Clamp(_currentY, minPitch, maxPitch);
 
-        _currentY = Mathf.Clamp(_currentY, minPitch, maxPitch);
-
-        var direction = new Vector3(0, 0, -_distance);
-        var rotation = Quaternion.Euler(_currentY, _currentX, 0);
-        _camera.transform.position = gameObject.transform.position + rotation * direction;
+            var direction = new Vector3(0, 0, -_distance);
+            var rotation = Quaternion.Euler(_currentY, _currentX, 0);
+            _camera.transform.position = gameObject.transform.position + rotation * direction;
+        }
 
         _camera.transform.LookAt(gameObject.transform.position);
     }
@@ -80,5 +89,13 @@ public class CameraController : MonoBehaviour
 
         if (!Physics.SphereCast(camRay, 0.5f, out _hit, _distance + DistanceOffset, layerMask)) return;
         _camera.transform.position = _hit.point + _hit.normal.normalized * CamClipOffset;
+    }
+
+    private void HandleInput()
+    {
+        IsPanning = _panAction.ReadValue<float>() > 0;
+        IsLocked = _camLockAction.ReadValue<float>() > 0;
+        _lookInput = _lookAction.ReadValue<Vector2>();
+
     }
 }

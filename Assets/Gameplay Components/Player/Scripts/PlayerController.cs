@@ -6,6 +6,7 @@ namespace Player.Scripts
     public class PlayerController : MonoBehaviour
     {
         private CharacterController _characterController;
+        private CameraController _cameraController;
         private Transform _playerBody;
         private Camera _camera;
 
@@ -29,9 +30,6 @@ namespace Player.Scripts
         public float smoothTime = 0.2f;
 
         private Transform _tracker;
-        private Vector3 _trackerForward;
-        private Vector3 _trackerRight;
-        private Vector3 _trackerDirection;
 
         private void Awake()
         {
@@ -39,6 +37,7 @@ namespace Player.Scripts
             _jumpAction = InputSystem.actions.FindAction("Jump");
             _characterController = GetComponent<CharacterController>();
             _camera = GetComponentInChildren<Camera>();
+            _cameraController = GetComponentInChildren<CameraController>();
             _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
             _playerBody = GetComponentInChildren<MeshRenderer>().transform;
         }
@@ -60,20 +59,18 @@ namespace Player.Scripts
             _tracker.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
             //TODO un-fuck this abomination
             var moveInput = _moveAction.ReadValue<Vector2>();
-
-            if (_characterController.isGrounded)
+            var camLocked = _cameraController.IsLocked;
+            if (_characterController.isGrounded && camLocked)
             {
-                _trackerForward = _tracker.transform.forward;
-                _trackerRight = _tracker.transform.right;
-
-                var trackerForwardVector = _trackerForward * moveInput.y;
-                var trackerRightVector = _trackerRight * moveInput.x;
-
-                _trackerDirection = trackerForwardVector + trackerRightVector;
-                _trackerDirection.Normalize();
-
-                _currentMovement.x = _trackerDirection.x;
-                _currentMovement.z = _trackerDirection.z;
+                var trackerDirection = GetDirection(_tracker.transform);
+                _currentMovement.x = trackerDirection.x;
+                _currentMovement.z = trackerDirection.z;
+            }
+            else if (_characterController.isGrounded)
+            {
+                var playerDirection = GetDirection(_playerBody.transform);
+                _currentMovement.x = playerDirection.x;
+                _currentMovement.z = playerDirection.z;
             }
 
             if (OnSteepSlope()) SteepSlopeMovement();
@@ -99,6 +96,14 @@ namespace Player.Scripts
             if (_moveAction.ReadValue<Vector2>() == Vector2.zero) return;
             var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
             _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
+        }
+
+        private Vector3 GetDirection(Transform target)
+        {
+            var targetDirection = (target.forward * _moveAction.ReadValue<Vector2>().y) +
+                                  (target.right * _moveAction.ReadValue<Vector2>().x);
+            targetDirection.Normalize();
+            return targetDirection;
         }
 
         #region SlopeMovement
