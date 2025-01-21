@@ -96,6 +96,11 @@ public class CameraController : MonoBehaviour
         IsPanning = _panAction.ReadValue<float>() > 0;
         IsLocked = _camLockAction.ReadValue<float>() > 0;
         _lookInput = _lookAction.ReadValue<Vector2>();
+        SetCursorLock();
+    }
 
+    private void SetCursorLock()
+    {
+        Cursor.lockState = IsPanning || IsLocked ? CursorLockMode.Locked : CursorLockMode.Confined;
     }
 }
