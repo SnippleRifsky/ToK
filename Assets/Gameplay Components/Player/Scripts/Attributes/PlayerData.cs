@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 public class PlayerData : MonoBehaviour
     {
@@ -16,12 +15,7 @@ public class PlayerData : MonoBehaviour
 
         public void Update()
         {
-            Stats.Mediator.Update(Time.deltaTime);
-        }
-
-        public void Start()
-        {
-            Debug.Log(Stats.ToString());
+            Stats.Update(Time.deltaTime);
         }
         
         public void TakeDamage(float damage)
