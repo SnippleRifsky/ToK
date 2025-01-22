@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
@@ -96,6 +97,7 @@ public class CameraController : MonoBehaviour
         IsPanning = _panAction.ReadValue<float>() > 0;
         IsLocked = _camLockAction.ReadValue<float>() > 0;
         _lookInput = _lookAction.ReadValue<Vector2>();
+        if (EventSystem.current.IsPointerOverGameObject()) return;
         SetCursorLock();
     }
 
