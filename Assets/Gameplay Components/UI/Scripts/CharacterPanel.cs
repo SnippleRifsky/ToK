@@ -20,8 +20,8 @@ public class CharacterPanel : MonoBehaviour
         _playerData = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerData>();
         if (_playerData is not null)
         {
-            _playerData.OnHealthChanged += UpdateHealthBar;
-            _playerData.OnResourceChanged += UpdateResourceBar;
+            _playerData.Stats.Resources.OnHealthChanged += UpdateHealthBar;
+            _playerData.Stats.Resources.OnResourceChanged += UpdateResourceBar;
         }
         else
         {
@@ -31,18 +31,17 @@ public class CharacterPanel : MonoBehaviour
 
     private void OnDestroy()
     {
-        _playerData.OnHealthChanged -= UpdateHealthBar;
+        _playerData.Stats.Resources.OnHealthChanged -= UpdateHealthBar;
+        _playerData.Stats.Resources.OnResourceChanged -= UpdateResourceBar;
     }
     
     private void UpdateHealthBar(float newHealth)
     {
-        // TODO make health regen trigger event
         _healthBar.value = (newHealth / _playerData.Stats.MaxHealth);
     }
 
     private void UpdateResourceBar(float newResource)
     {
-        // TODO make resource regen trigger event
         _resourceBar.value = (newResource / _playerData.Stats.MaxResource);
     }
 }

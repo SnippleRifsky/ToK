@@ -1,21 +1,32 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class ResourceSystem
 {
     private readonly Stats stats;
     private float currentHealth;
     private float currentResource;
+    public event Action<float> OnHealthChanged;
+    public event Action<float> OnResourceChanged;
 
     public float CurrentHealth
     {
         get => currentHealth;
-        set => currentHealth = Mathf.Clamp(value, 0, stats.MaxHealth);
+        set
+        {
+            currentHealth = Mathf.Clamp(value, 0, stats.MaxHealth);
+            OnHealthChanged?.Invoke(CurrentHealth);
+        } 
     }
 
     public float CurrentResource
     {
         get => currentResource;
-        set => currentResource = Mathf.Clamp(value, 0, stats.MaxResource);
+        set
+        {
+            currentResource = Mathf.Clamp(value, 0, stats.MaxResource);
+            OnResourceChanged?.Invoke(CurrentResource);
+        } 
     }
 
     public ResourceSystem(Stats stats)
