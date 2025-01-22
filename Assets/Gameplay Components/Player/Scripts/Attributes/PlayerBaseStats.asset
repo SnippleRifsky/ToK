@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attack: 23
   defense: 44
-  maxHealth: 400
-  maxResource: 231
-  healthRegen: 1
-  resourceRegen: 2
+  maxHealth: 100
+  maxResource: 100
+  healthRegen: 5
+  resourceRegen: 5
