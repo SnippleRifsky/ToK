@@ -451,7 +451,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 57810401}
-  - component: {fileID: 57810402}
   m_Layer: 3
   m_Name: CameraRig
   m_TagString: Untagged
@@ -476,27 +475,6 @@ Transform:
   - {fileID: 870196130}
   m_Father: {fileID: 226102230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &57810402
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 57810400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca91ccdc947ad3f48913191552c44ff8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookSensitivity: 0.6
-  minPitch: -60
-  maxPitch: 80
-  minZoom: 2
-  maxZoom: 20
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  isDebug: 1
 --- !u!1 &80614532
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,7 +1322,6 @@ GameObject:
   m_Component:
   - component: {fileID: 226102230}
   - component: {fileID: 226102229}
-  - component: {fileID: 226102231}
   - component: {fileID: 226102232}
   m_Layer: 3
   m_Name: Player
@@ -1393,24 +1370,9 @@ Transform:
   m_Children:
   - {fileID: 1786022517}
   - {fileID: 57810401}
+  - {fileID: 1255880113}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &226102231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 226102227}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f951ab5755170de4c8a96d126dd44532, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentLevelText: {fileID: 177644730}
-  currentXpText: {fileID: 2030257976}
-  xpToNextLevelText: {fileID: 1947664182}
-  xpSystemType: {fileID: 11400000, guid: 410a30a84f382f2489afe94929ea35e5, type: 2}
 --- !u!114 &226102232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3396,8 +3358,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 226102231}
-        m_TargetAssemblyTypeName: XpTracking, Assembly-CSharp
+      - m_Target: {fileID: 226102232}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: AddXp
         m_Mode: 3
         m_Arguments:
@@ -5038,7 +5000,7 @@ RectTransform:
   m_Children:
   - {fileID: 964199535}
   - {fileID: 1186901097}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 226102230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5128,8 +5090,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 226102231}
-        m_TargetAssemblyTypeName: XpTracking, Assembly-CSharp
+      - m_Target: {fileID: 226102232}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: AddXp
         m_Mode: 3
         m_Arguments:
@@ -8423,6 +8385,5 @@ SceneRoots:
   - {fileID: 1249575491}
   - {fileID: 914479409}
   - {fileID: 226102230}
-  - {fileID: 1255880113}
   - {fileID: 4841285}
   - {fileID: 392179185}

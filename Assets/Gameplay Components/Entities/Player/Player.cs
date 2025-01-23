@@ -1,15 +1,14 @@
-﻿using UnityEngine;
-
-public class Player : Entity
+﻿public class Player : Entity
     {
         public PlayerController PlayerController { get; private set; }
         public CameraController CameraController { get; private set; }
+        public CharacterLeveling CharacterLeveling { get; private set; }
 
         private void SetupPlayer()
         {
             PlayerController = gameObject.AddComponent<PlayerController>();
+            CharacterLeveling = gameObject.AddComponent<CharacterLeveling>();
             
-            // Iterate children to find by name or component if needed
             for (var i = 0; i < transform.childCount; i++)
             {
                 var child = transform.GetChild(i).gameObject;
@@ -29,5 +28,10 @@ public class Player : Entity
         public void SpendResource(float amount)
         {
             Stats.Resources.CurrentResource -= amount;
+        }
+
+        public void AddXp(int amount)
+        {
+            CharacterLeveling.AddXp(amount);
         }
     }
