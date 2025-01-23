@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    private Player _player;
+    
     private CharacterController _characterController;
     private CameraController _cameraController;
     private Transform _playerBody;
@@ -30,13 +32,14 @@ public class PlayerController : MonoBehaviour
 
     private Transform _tracker;
 
-    private void Awake()
+    private void Start()
     {
+        _player = GetComponent<Player>();
         _moveAction = InputSystem.actions.FindAction("Move");
         _jumpAction = InputSystem.actions.FindAction("Jump");
         _characterController = GetComponent<CharacterController>();
         _camera = GetComponentInChildren<Camera>();
-        _cameraController = GetComponentInChildren<CameraController>();
+        _cameraController = _player.CameraController;
         _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
         _playerBody = GetComponentInChildren<MeshRenderer>().transform;
     }
@@ -128,7 +131,7 @@ public class PlayerController : MonoBehaviour
         if (!_characterController.isGrounded) return false;
         var slopeRay = new Ray(_playerBody.position, Vector3.down);
 
-        if (!Physics.SphereCast(slopeRay, _characterController.radius, out _slopeHit,
+        if (!Physics.SphereCast(slopeRay, (_characterController.radius * 1.1f), out _slopeHit,
                 _characterController.height / 2 * _groundRayDistance)) return false;
 
         var slopeAngle = Vector3.Angle(Vector3.up, _slopeHit.normal);
