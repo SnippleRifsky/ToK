@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
     private float _zoomValue = 10f;
 
     [Header("Camera Collision Parameters")] [SerializeField]
-    private LayerMask layerMask;
+    private LayerMask layerMask = 0;
 
     private const float CamClipOffset = 0.55f;
     private const float DistanceOffset = -0.2f;
@@ -88,7 +88,7 @@ public class CameraController : MonoBehaviour
         var camRay = new Ray(playerPosition,
             (_camera.transform.position - gameObject.transform.position).normalized);
 
-        if (!Physics.SphereCast(camRay, 0.5f, out _hit, _distance + DistanceOffset, layerMask)) return;
+        if (!Physics.SphereCast(camRay, 0.5f, out _hit, _distance + DistanceOffset, 1 << layerMask)) return;
         _camera.transform.position = _hit.point + _hit.normal.normalized * CamClipOffset;
     }
 
