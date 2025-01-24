@@ -1,10 +1,12 @@
+using System;
 using System.Linq;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CharacterPanel : MonoBehaviour
 {
-    private Player _player;
+    private PlayerData _playerData;
     private Slider _healthBar;
     private Slider _resourceBar;
 
@@ -15,11 +17,11 @@ public class CharacterPanel : MonoBehaviour
         _resourceBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Resource Bar");
         
-        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        if (_player is not null)
+        _playerData = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerData>();
+        if (_playerData is not null)
         {
-            _player.Stats.Resources.OnHealthChanged += UpdateHealthBar;
-            _player.Stats.Resources.OnResourceChanged += UpdateResourceBar;
+            _playerData.Stats.Resources.OnHealthChanged += UpdateHealthBar;
+            _playerData.Stats.Resources.OnResourceChanged += UpdateResourceBar;
         }
         else
         {
@@ -29,17 +31,17 @@ public class CharacterPanel : MonoBehaviour
 
     private void OnDestroy()
     {
-        _player.Stats.Resources.OnHealthChanged -= UpdateHealthBar;
-        _player.Stats.Resources.OnResourceChanged -= UpdateResourceBar;
+        _playerData.Stats.Resources.OnHealthChanged -= UpdateHealthBar;
+        _playerData.Stats.Resources.OnResourceChanged -= UpdateResourceBar;
     }
     
     private void UpdateHealthBar(float newHealth)
     {
-        _healthBar.value = (newHealth / _player.Stats.MaxHealth);
+        _healthBar.value = (newHealth / _playerData.Stats.MaxHealth);
     }
 
     private void UpdateResourceBar(float newResource)
     {
-        _resourceBar.value = (newResource / _player.Stats.MaxResource);
+        _resourceBar.value = (newResource / _playerData.Stats.MaxResource);
     }
 }

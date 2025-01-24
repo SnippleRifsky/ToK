@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     private InputAction _zoomAction;
     private InputAction _panAction;
     private InputAction _camLockAction;
-    private bool IsPanning { get; set; }
+    public bool IsPanning { get; private set; }
     public bool IsLocked { get; private set; }
     private Vector2 _lookInput;
 
@@ -100,7 +100,7 @@ public class CameraController : MonoBehaviour
         if (EventSystem.current.IsPointerOverGameObject()) return;
         SetCursorLock();
     }
-    
+
     private void SetCursorLock()
     {
         Cursor.lockState = IsPanning || IsLocked ? CursorLockMode.Locked : CursorLockMode.Confined;

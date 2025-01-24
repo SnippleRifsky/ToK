@@ -38,7 +38,6 @@ public class CharacterLeveling : MonoBehaviour
 
     private void Start()
     {
-        
         _baseXpSystem.GetLevelXpRange();
     }
 
