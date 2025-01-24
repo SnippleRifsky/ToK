@@ -1407,10 +1407,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f951ab5755170de4c8a96d126dd44532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLevelText: {fileID: 177644730}
-  currentXpText: {fileID: 2030257976}
-  xpToNextLevelText: {fileID: 1947664182}
-  xpSystemType: {fileID: 11400000, guid: 410a30a84f382f2489afe94929ea35e5, type: 2}
 --- !u!114 &226102232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1424,8 +1420,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
-  level: 0
-  entityName: 
 --- !u!1 &230364839
 GameObject:
   m_ObjectHideFlags: 0
