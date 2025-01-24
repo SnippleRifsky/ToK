@@ -4,8 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "LinearXpSystem", menuName = "RPG Components/ Linear Xp System")]
 public class LinearXpSystem : BaseXpSystem
 {
-    [SerializeField] private float offset = 2f;
-    [SerializeField] private float curveGain = 0.095f;
+    [SerializeField] private float offset = 1f;
+    [SerializeField] private float curveGain = 1f;
     private int _levelXpAmount;
     
     public override bool AddXp(int amount)
