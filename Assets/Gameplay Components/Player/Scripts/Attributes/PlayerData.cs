@@ -1,33 +1,49 @@
 ﻿using System;
 using UnityEngine;
 
-public class PlayerData : MonoBehaviour
+public class PlayerData : MonoBehaviour, IResourceProvider
     {
         [SerializeField] public BaseStats baseStats;
-        public Stats Stats { get; private set; }
+        private Stats _stats;
 
         void Awake()
         {
-            Stats = new Stats(new StatsMediator(), baseStats);
+            _stats = new Stats(new StatsMediator(), baseStats);
+        }
+        
+        public float CurrentHealth => _stats.Resources.CurrentHealth;
+        public float MaxHealth => _stats.MaxHealth;
+        public event Action<float> OnHealthChanged
+        {
+            add => _stats.Resources.OnHealthChanged += value;
+            remove => _stats.Resources.OnHealthChanged -= value;
+        }
+        
+        public float CurrentResource => _stats.Resources.CurrentResource;
+        public float MaxResource => _stats.MaxResource;
+        public event Action<float> OnResourceChanged
+        {
+            add => _stats.Resources.OnResourceChanged += value;
+            remove => _stats.Resources.OnResourceChanged -= value;
         }
 
         public void Update()
         {
-            Stats.Update(Time.deltaTime);
+            _stats.Update(Time.deltaTime);
         }
         
         public void TakeDamage(float damage)
         {
-            Stats.Resources.CurrentHealth -= damage;
+            _stats.Resources.CurrentHealth -= damage;
         }
 
-        public void Heal(float heal)
+        public void Heal(float healAmount)
         {
-            Stats.Resources.CurrentHealth += heal;
+            _stats.Resources.CurrentHealth += healAmount;
         }
 
-        public void SpendResource(float amount)
+        public void SpendResource(float resourceCost)
         {
-            Stats.Resources.CurrentResource -= amount;
+            _stats.Resources.CurrentResource -= resourceCost;
         }
     }
