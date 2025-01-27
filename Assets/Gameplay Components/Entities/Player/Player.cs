@@ -1,4 +1,6 @@
-﻿public class Player : Entity
+﻿using System;
+
+public class Player : Entity, IResourceProvider
 {
     public PlayerController PlayerController { get; private set; }
     public CameraController CameraController { get; private set; }
@@ -8,6 +10,22 @@
     {
         SetupPlayer();
         Stats = new Stats(new StatsMediator(), baseStats);
+    }
+    
+    public float CurrentHealth => Stats.Resources.CurrentHealth;
+    public float MaxHealth => Stats.MaxHealth;
+    public event Action<float> OnHealthChanged
+    {
+        add => Stats.Resources.OnHealthChanged += value;
+        remove => Stats.Resources.OnHealthChanged -= value;
+    }
+        
+    public float CurrentResource => Stats.Resources.CurrentResource;
+    public float MaxResource => Stats.MaxResource;
+    public event Action<float> OnResourceChanged
+    {
+        add => Stats.Resources.OnResourceChanged += value;
+        remove => Stats.Resources.OnResourceChanged -= value;
     }
 
     private void SetupPlayer()
