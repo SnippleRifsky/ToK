@@ -37,6 +37,7 @@ public class CameraController : MonoBehaviour
     private float _zoomValue = 10f;
     private bool IsPanning { get; set; }
     public bool IsLocked { get; private set; }
+    private LayerMask _entityLayerMask;
 
     private void Awake()
     {
@@ -45,6 +46,8 @@ public class CameraController : MonoBehaviour
         _panAction = InputSystem.actions.FindAction("Pan");
         _camLockAction = InputSystem.actions.FindAction("Cam Lock");
         _camera = GetComponentInChildren<Camera>();
+        
+        _entityLayerMask = LayerMask.GetMask("Entity");
 
         Cursor.lockState = CursorLockMode.Confined;
     }
@@ -54,6 +57,11 @@ public class CameraController : MonoBehaviour
         CameraRotation();
         Zoom();
         DetectOcclusion();
+    }
+    
+    private bool ShouldAllowPanning()
+    {
+        return !CursorRaycastService.Instance.IsPointerOverEntity() && !EventSystem.current.IsPointerOverGameObject();
     }
 
     private void CameraRotation()
@@ -94,7 +102,8 @@ public class CameraController : MonoBehaviour
 
     private void HandleInput()
     {
-        IsPanning = _panAction.ReadValue<float>() > 0;
+        bool tryPanning = _panAction.ReadValue<float>() > 0; 
+        IsPanning = tryPanning && ShouldAllowPanning();
         IsLocked = _camLockAction.ReadValue<float>() > 0;
         _lookInput = _lookAction.ReadValue<Vector2>();
         if (EventSystem.current.IsPointerOverGameObject()) return;
