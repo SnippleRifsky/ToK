@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class CursorRaycastService : MonoBehaviour
 {
     private static CursorRaycastService _instance;
     private Camera _mainCamera;
     private LayerMask _entityLayer;
+    private Dictionary<Collider, Entity> _entityCache = new Dictionary<Collider, Entity>();
 
     public static CursorRaycastService Instance
     {
@@ -36,7 +38,7 @@ public class CursorRaycastService : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     private static void CreateInstance()
     {
-        GameObject go = new GameObject("CursorRaycastService");
+        var go = new GameObject("CursorRaycastService");
         _instance = go.AddComponent<CursorRaycastService>();
         DontDestroyOnLoad(go);
     }
@@ -45,11 +47,22 @@ public class CursorRaycastService : MonoBehaviour
     {
         entity = null;
         var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+        
+        return Physics.Raycast(ray, out var hit, Mathf.Infinity, _entityLayer) &&
+               _entityCache.TryGetValue(hit.collider, out entity);
+    }
+    
+    // Called by Entity when it's created/enabled
+    public void RegisterEntity(Entity entity, Collider entityCollider)
+    {
+        _entityCache.TryAdd(entityCollider, entity);
+    }
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _entityLayer)) return false;
-        entity = hit.collider.GetComponent<Entity>();
-        return entity != null;
-
+    // Called by Entity when it's destroyed/disabled
+    public void UnregisterEntity(Collider entityCollider)
+    {
+        if (!_entityCache.ContainsKey(entityCollider)) return;
+        _entityCache.Remove(entityCollider);
     }
 
     public bool IsPointerOverEntity()

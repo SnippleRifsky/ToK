@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Entity : MonoBehaviour
     [SerializeField] protected string entityName = string.Empty;
 
     protected Entity _target;
+    private CapsuleCollider _collider;
     public Stats Stats { get; protected set; }
 
     public int Level
@@ -25,6 +27,21 @@ public class Entity : MonoBehaviour
     protected virtual void Awake()
     {
         Stats = new Stats(new StatsMediator(), baseStats);
+        _collider = GetComponent<CapsuleCollider>();
+    }
+
+    protected virtual void OnEnable()
+    {
+        if (_collider == null) return;
+        CursorRaycastService.Instance.RegisterEntity(this, _collider as Collider);
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (_collider != null)
+        {
+            CursorRaycastService.Instance.UnregisterEntity(_collider);
+        }
     }
 
     protected virtual void Update()
