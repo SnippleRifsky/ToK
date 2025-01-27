@@ -1,26 +1,24 @@
 using TMPro;
 using UnityEngine;
 
-
 public class CharacterLeveling : MonoBehaviour
 {
+    private BaseXpSystem _baseXpSystem;
+
     // Temporary Leveling UI
     private TextMeshProUGUI _currentLevelText;
     private TextMeshProUGUI _currentXpText;
-    private TextMeshProUGUI _xpToNextLevelText;
     private BaseXpSystem _xpSystemType;
-    
+    private TextMeshProUGUI _xpToNextLevelText;
+
     public int CharacterLevel { get; protected set; }
-    
-    private BaseXpSystem _baseXpSystem;
 
     private void Awake()
     {
         _baseXpSystem = ScriptableObject.CreateInstance<LinearXpSystem>();
-        
-        var textComponents = GetComponentsInChildren<TextMeshProUGUI>(); 
+
+        var textComponents = GetComponentsInChildren<TextMeshProUGUI>();
         foreach (var textComponent in textComponents)
-        {
             switch (textComponent.name)
             {
                 case "Current Level":
@@ -33,12 +31,10 @@ public class CharacterLeveling : MonoBehaviour
                     _xpToNextLevelText = textComponent;
                     break;
             }
-        }
     }
 
     private void Start()
     {
-        
         _baseXpSystem.GetLevelXpRange();
     }
 
@@ -57,6 +53,8 @@ public class CharacterLeveling : MonoBehaviour
     {
         _currentLevelText.text = $"Current Level: {_baseXpSystem.CurrentLevel}";
         _currentXpText.text = $"Current XP: {_baseXpSystem.CurrentXp}";
-        _xpToNextLevelText.text = !_baseXpSystem.AtLevelCap ? $"XP To Next Level: {_baseXpSystem.XpToNextLevel()}" : $"XP To Next Level: At Max";
+        _xpToNextLevelText.text = !_baseXpSystem.AtLevelCap
+            ? $"XP To Next Level: {_baseXpSystem.XpToNextLevel()}"
+            : "XP To Next Level: At Max";
     }
 }

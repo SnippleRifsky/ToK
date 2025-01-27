@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class CharacterPanel : MonoBehaviour
 {
-    private Player _player;
     private Slider _healthBar;
+    private Player _player;
     private Slider _resourceBar;
 
     private void Awake()
@@ -14,7 +14,7 @@ public class CharacterPanel : MonoBehaviour
             .FirstOrDefault(slider => slider.gameObject.name == "Health Bar");
         _resourceBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Resource Bar");
-        
+
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         if (_player is not null)
         {
@@ -32,14 +32,14 @@ public class CharacterPanel : MonoBehaviour
         _player.Stats.Resources.OnHealthChanged -= UpdateHealthBar;
         _player.Stats.Resources.OnResourceChanged -= UpdateResourceBar;
     }
-    
+
     private void UpdateHealthBar(float newHealth)
     {
-        _healthBar.value = (newHealth / _player.Stats.MaxHealth);
+        _healthBar.value = newHealth / _player.Stats.MaxHealth;
     }
 
     private void UpdateResourceBar(float newResource)
     {
-        _resourceBar.value = (newResource / _player.Stats.MaxResource);
+        _resourceBar.value = newResource / _player.Stats.MaxResource;
     }
 }

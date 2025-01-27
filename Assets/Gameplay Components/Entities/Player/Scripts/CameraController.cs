@@ -4,39 +4,39 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
-    [Header("Camera Input")] private InputAction _lookAction;
-    private InputAction _zoomAction;
-    private InputAction _panAction;
-    private InputAction _camLockAction;
-    private bool IsPanning { get; set; }
-    public bool IsLocked { get; private set; }
-    private Vector2 _lookInput;
+    private const float CamClipOffset = 0.55f;
+    private const float DistanceOffset = -0.2f;
 
     [Header("Camera Movement Parameters")] [SerializeField]
     private float lookSensitivity = 0.5f;
 
     [SerializeField] private float minPitch = -80f;
     [SerializeField] private float maxPitch = 80f;
-    private Camera _camera;
-    private float _currentX;
-    private float _currentY;
 
     [Header("Camera Zoom Parameters")] [SerializeField]
     private float minZoom = 2f;
 
     [SerializeField] private float maxZoom = 20f;
-    private float _distance;
-    private float _zoomValue = 10f;
 
     [Header("Camera Collision Parameters")] [SerializeField]
     private LayerMask layerMask = 0;
 
-    private const float CamClipOffset = 0.55f;
-    private const float DistanceOffset = -0.2f;
-    private RaycastHit _hit;
-
     [Header("Debug Variables")] [SerializeField]
     private bool isDebug;
+
+    private Camera _camera;
+    private InputAction _camLockAction;
+    private float _currentX;
+    private float _currentY;
+    private float _distance;
+    private RaycastHit _hit;
+    [Header("Camera Input")] private InputAction _lookAction;
+    private Vector2 _lookInput;
+    private InputAction _panAction;
+    private InputAction _zoomAction;
+    private float _zoomValue = 10f;
+    private bool IsPanning { get; set; }
+    public bool IsLocked { get; private set; }
 
     private void Awake()
     {
@@ -45,7 +45,7 @@ public class CameraController : MonoBehaviour
         _panAction = InputSystem.actions.FindAction("Pan");
         _camLockAction = InputSystem.actions.FindAction("Cam Lock");
         _camera = GetComponentInChildren<Camera>();
-        
+
         Cursor.lockState = CursorLockMode.Confined;
     }
 
@@ -100,7 +100,7 @@ public class CameraController : MonoBehaviour
         if (EventSystem.current.IsPointerOverGameObject()) return;
         SetCursorLock();
     }
-    
+
     private void SetCursorLock()
     {
         Cursor.lockState = IsPanning || IsLocked ? CursorLockMode.Locked : CursorLockMode.Confined;

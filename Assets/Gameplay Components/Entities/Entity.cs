@@ -3,21 +3,24 @@
 public class Entity : MonoBehaviour
 {
     [SerializeField] public BaseStats baseStats;
-    public Stats Stats { get; protected set; }
     [SerializeField] protected int level;
+
+    [SerializeField] protected string entityName = string.Empty;
+
+    protected Entity _target;
+    public Stats Stats { get; protected set; }
+
     public int Level
     {
         get => level;
         protected set => level = value;
     }
 
-    [SerializeField] protected string entityName = string.Empty;
     public string EntityName
     {
         get => entityName;
         protected set => entityName = value;
     }
-    protected Entity _target;
 
     protected virtual void Awake()
     {

@@ -1,37 +1,37 @@
 ﻿public class Player : Entity
+{
+    public PlayerController PlayerController { get; private set; }
+    public CameraController CameraController { get; private set; }
+    public CharacterLeveling CharacterLeveling { get; private set; }
+
+    protected override void Awake()
     {
-        public PlayerController PlayerController { get; private set; }
-        public CameraController CameraController { get; private set; }
-        public CharacterLeveling CharacterLeveling { get; private set; }
+        SetupPlayer();
+        Stats = new Stats(new StatsMediator(), baseStats);
+    }
 
-        private void SetupPlayer()
-        {
-            PlayerController = gameObject.AddComponent<PlayerController>();
-            CharacterLeveling = gameObject.AddComponent<CharacterLeveling>();
-            
-            for (var i = 0; i < transform.childCount; i++)
-            {
-                var child = transform.GetChild(i).gameObject;
-                if (child.name != "CameraRig") continue;
-                CameraController = child.AddComponent<CameraController>();
-                break;
-            }
-        }
+    private void SetupPlayer()
+    {
+        PlayerController = gameObject.AddComponent<PlayerController>();
+        CharacterLeveling = gameObject.AddComponent<CharacterLeveling>();
 
-        protected override void Awake()
+        for (var i = 0; i < transform.childCount; i++)
         {
-            SetupPlayer();
-            Stats = new Stats(new StatsMediator(), baseStats);
-        }
-        
-        // Probably move to ability system once implemented
-        public void SpendResource(float amount)
-        {
-            Stats.Resources.CurrentResource -= amount;
-        }
-
-        public void AddXp(int amount)
-        {
-            CharacterLeveling.AddXp(amount);
+            var child = transform.GetChild(i).gameObject;
+            if (child.name != "CameraRig") continue;
+            CameraController = child.AddComponent<CameraController>();
+            break;
         }
     }
+
+    // Probably move to ability system once implemented
+    public void SpendResource(float amount)
+    {
+        Stats.Resources.CurrentResource -= amount;
+    }
+
+    public void AddXp(int amount)
+    {
+        CharacterLeveling.AddXp(amount);
+    }
+}

@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class UIEntityNameplate : MonoBehaviour
 {
-    private Entity _entity;
-    private Camera _playerCamera;
     private Canvas _canvas;
+    private Entity _entity;
     private Slider _healthBar;
     private TextMeshProUGUI _levelLabel;
     private TextMeshProUGUI _nameLabel;
+    private Camera _playerCamera;
 
 
     private void Awake()
