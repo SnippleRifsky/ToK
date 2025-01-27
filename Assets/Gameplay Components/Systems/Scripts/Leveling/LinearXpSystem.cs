@@ -1,17 +1,16 @@
 using UnityEngine;
 
-
 [CreateAssetMenu(fileName = "LinearXpSystem", menuName = "RPG Components/ Linear Xp System")]
 public class LinearXpSystem : BaseXpSystem
 {
     [SerializeField] private float offset = 1f;
     [SerializeField] private float curveGain = 1f;
     private int _levelXpAmount;
-    
+
     public override bool AddXp(int amount)
     {
         var remainingXp = amount;
-        
+
         while (remainingXp > 0 && !AtLevelCap)
         {
             var xpToNextLevel = XpToNextLevel();
@@ -29,10 +28,7 @@ public class LinearXpSystem : BaseXpSystem
             }
         }
 
-        if (remainingXp > 0 && AtLevelCap)
-        {
-            Debug.Log($"Couldn't add {remainingXp} xp - at level cap");
-        }
+        if (remainingXp > 0 && AtLevelCap) Debug.Log($"Couldn't add {remainingXp} xp - at level cap");
 
         return amount != remainingXp;
     }
@@ -50,6 +46,7 @@ public class LinearXpSystem : BaseXpSystem
             Debug.Log("Unable to level up. Max level reached.");
             return false;
         }
+
         CurrentLevel++;
         GetLevelXpRange();
         Debug.Log($"Level Up! New Level: {CurrentLevel}");
@@ -58,7 +55,7 @@ public class LinearXpSystem : BaseXpSystem
 
     public override int GetLevelXpRange()
     {
-        _levelXpAmount = (int)Mathf.Round(Mathf.Pow((CurrentLevel/curveGain), offset));
+        _levelXpAmount = (int)Mathf.Round(Mathf.Pow(CurrentLevel / curveGain, offset));
         Debug.Log($"Xp required for {CurrentLevel}: {_levelXpAmount}");
         return _levelXpAmount;
     }

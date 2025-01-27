@@ -4,27 +4,27 @@ public enum ResourceType
 {
     Mana,
     Rage,
-    Energy,
+    Energy
 }
 
 public abstract class ResourceBehavior
 {
-        protected readonly Stats stats;
-        protected float currentValue;
+    protected readonly Stats stats;
+    protected float currentValue;
 
-        public float CurrentValue
-        {
-            get => currentValue;
-            set => currentValue = Mathf.Clamp(value, 0, stats.MaxResource);
-        }
+    protected ResourceBehavior(Stats stats)
+    {
+        this.stats = stats;
+        CurrentValue = stats.MaxResource;
+    }
 
-        protected ResourceBehavior(Stats stats)
-        {
-            this.stats = stats;
-            CurrentValue = stats.MaxResource;
-        }
+    public float CurrentValue
+    {
+        get => currentValue;
+        set => currentValue = Mathf.Clamp(value, 0, stats.MaxResource);
+    }
 
-        public abstract void Update(float deltaTime);
+    public abstract void Update(float deltaTime);
 }
 
 public class ManaBehavior : ResourceBehavior
@@ -38,9 +38,6 @@ public class ManaBehavior : ResourceBehavior
 
     public override void Update(float deltaTime)
     {
-        if (CurrentValue >= stats.MaxResource)
-        {
-            CurrentValue += regenRate * deltaTime;
-        }
+        if (CurrentValue >= stats.MaxResource) CurrentValue += regenRate * deltaTime;
     }
 }

@@ -1,42 +1,44 @@
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController _characterController;
-    private CameraController _cameraController;
-    private Transform _playerBody;
-    private Camera _camera;
-
     [Header("Movement Parameters")] [SerializeField]
     private float walkSpeed = 3f;
-
-    private readonly float _slopeSlideSpeed = 2f;
-    private readonly float _groundRayDistance = 1f;
-    private RaycastHit _slopeHit;
-
-    private InputAction _moveAction;
-    private InputAction _jumpAction;
 
     [Header("Jump Parameters")] [SerializeField]
     private float jumpForce = 3f;
 
     [SerializeField] private float gravity = -9.81f;
-    private Vector3 _currentMovement;
 
     [Header("Rotation Parameters")] [SerializeField]
     public float smoothTime = 0.2f;
 
+    private readonly float _groundRayDistance = 1f;
+
+    private readonly float _slopeSlideSpeed = 2f;
+    private Camera _camera;
+    private CameraController _cameraController;
+
+    private CharacterController _characterController;
+    private Vector3 _currentMovement;
+    private InputAction _jumpAction;
+
+    private InputAction _moveAction;
+    private Player _player;
+    private Transform _playerBody;
+    private RaycastHit _slopeHit;
+
     private Transform _tracker;
 
-    private void Awake()
+    private void Start()
     {
+        _player = GetComponent<Player>();
         _moveAction = InputSystem.actions.FindAction("Move");
         _jumpAction = InputSystem.actions.FindAction("Jump");
         _characterController = GetComponent<CharacterController>();
         _camera = GetComponentInChildren<Camera>();
-        _cameraController = GetComponentInChildren<CameraController>();
+        _cameraController = _player.CameraController;
         _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
         _playerBody = GetComponentInChildren<MeshRenderer>().transform;
     }
@@ -100,7 +102,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (_moveAction.ReadValue<Vector2>().y >= 0) 
+            if (_moveAction.ReadValue<Vector2>().y >= 0)
             {
                 var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
                 _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
@@ -128,7 +130,7 @@ public class PlayerController : MonoBehaviour
         if (!_characterController.isGrounded) return false;
         var slopeRay = new Ray(_playerBody.position, Vector3.down);
 
-        if (!Physics.SphereCast(slopeRay, _characterController.radius, out _slopeHit,
+        if (!Physics.SphereCast(slopeRay, _characterController.radius * 1.1f, out _slopeHit,
                 _characterController.height / 2 * _groundRayDistance)) return false;
 
         var slopeAngle = Vector3.Angle(Vector3.up, _slopeHit.normal);
