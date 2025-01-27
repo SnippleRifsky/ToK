@@ -1,67 +1,45 @@
-using System;
 using System.Linq;
-using NUnit.Framework.Constraints;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class CharacterPanel : MonoBehaviour
 {
-    private IHealthProvider _healthProvider;
-    private IResourceProvider _resourceProvider;
     private Slider _healthBar;
+    private Player _player;
     private Slider _resourceBar;
-    
+
     private void Awake()
     {
         _healthBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Health Bar");
         _resourceBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Resource Bar");
-    }
 
-    public void Initalize(IHealthProvider provider)
-    {
-        UnsubscribeFromEvents();
-
-        _healthProvider = provider;
-        _resourceProvider = provider as IResourceProvider;
-        
-        SubscribeToEvents();
-        UpdateUi();
-    }
-    
-    private void SubscribeToEvents()
-    {
-        _healthProvider.OnHealthChanged += UpdateHealthBar;
-        if (_resourceProvider != null) _resourceProvider.OnResourceChanged += UpdateResourceBar;
-    }
-    
-    private void UnsubscribeFromEvents()
-    {
-        if (_healthProvider != null) _healthProvider.OnHealthChanged -= UpdateHealthBar;
-        if (_resourceProvider != null) _resourceProvider.OnResourceChanged -= UpdateResourceBar;
-    }
-    
-    private void UpdateUi()
-    {
-        UpdateHealthBar(_healthProvider.CurrentHealth);
-        if (_resourceProvider != null) UpdateResourceBar(_resourceProvider.CurrentResource);
+        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        if (_player is not null)
+        {
+            _player.Stats.Resources.OnHealthChanged += UpdateHealthBar;
+            _player.Stats.Resources.OnResourceChanged += UpdateResourceBar;
+        }
+        else
+        {
+            Debug.LogWarning("No player data found");
+        }
     }
 
     private void OnDestroy()
     {
-        UnsubscribeFromEvents();
+        _player.Stats.Resources.OnHealthChanged -= UpdateHealthBar;
+        _player.Stats.Resources.OnResourceChanged -= UpdateResourceBar;
     }
-    
+
     private void UpdateHealthBar(float newHealth)
     {
-        _healthBar.value = (newHealth / _healthProvider.MaxHealth);
+        _healthBar.value = newHealth / _player.Stats.MaxHealth;
     }
 
     private void UpdateResourceBar(float newResource)
     {
-        if (_resourceProvider == null) return;
-        _resourceBar.value = (newResource / _resourceProvider.MaxResource);
+        _resourceBar.value = newResource / _player.Stats.MaxResource;
     }
 }

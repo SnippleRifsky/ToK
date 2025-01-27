@@ -6,8 +6,12 @@ public class StatsMediator
     private readonly LinkedList<StatModifier> modifiers = new();
 
     public event EventHandler<Query> Queries;
-    public void PerformQuery(object sender, Query query) => Queries?.Invoke(sender, query);
-    
+
+    public void PerformQuery(object sender, Query query)
+    {
+        Queries?.Invoke(sender, query);
+    }
+
     public void AddModifier(StatModifier modifier)
     {
         modifiers.AddLast(modifier);
@@ -31,7 +35,7 @@ public class StatsMediator
             modifier.Update(deltaTime);
             node = node.Next;
         }
-        
+
         // Dispose any nodes that are marked for removal
         node = modifiers.First;
         while (node != null)
@@ -39,10 +43,7 @@ public class StatsMediator
             // get reference to the next node in case the current is marked for removeal.
             var nextNode = node.Next;
 
-            if (node.Value.MarkedForRemoval)
-            {
-                node.Value.Dispose();
-            }
+            if (node.Value.MarkedForRemoval) node.Value.Dispose();
             node = nextNode;
         }
     }

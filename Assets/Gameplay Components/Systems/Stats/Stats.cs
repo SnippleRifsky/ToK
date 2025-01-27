@@ -7,22 +7,23 @@ public enum StatType
     MaxHealth,
     MaxResource,
     HealthRegen,
-    ResourceRegen,
+    ResourceRegen
 }
+
 public class Stats
 {
-    internal readonly StatsMediator mediator;
     internal readonly BaseStats baseStats;
-    private readonly ResourceSystem resourceSystem;
-    
-    public StatsMediator Mediator => mediator;
-    public ResourceSystem Resources => resourceSystem;
+    internal readonly StatsMediator mediator;
 
-    public void Update(float deltaTime)
+    public Stats(StatsMediator mediator, BaseStats baseStats)
     {
-        mediator.Update(deltaTime);
-        resourceSystem.Update(deltaTime);
+        this.mediator = mediator;
+        this.baseStats = baseStats;
+        Resources = new ResourceSystem(this);
     }
+
+    public StatsMediator Mediator => mediator;
+    public ResourceSystem Resources { get; }
 
     public int Attack
     {
@@ -44,13 +45,6 @@ public class Stats
         }
     }
 
-    public Stats(StatsMediator mediator, BaseStats baseStats)
-    {
-        this.mediator = mediator;
-        this.baseStats = baseStats;
-        resourceSystem = new ResourceSystem(this);
-    }
-    
     public int MaxHealth
     {
         get
@@ -90,9 +84,17 @@ public class Stats
             return query.Value / 100f;
         }
     }
-    
-    public override string ToString() => 
-        $"Attack: {Attack}, Defense: {Defense}, " +
-        $"Health: {Resources.CurrentHealth}/{MaxHealth}, " +
-        $"Resource: {Resources.CurrentResource}/{MaxResource}";
+
+    public void Update(float deltaTime)
+    {
+        mediator.Update(deltaTime);
+        Resources.Update(deltaTime);
+    }
+
+    public override string ToString()
+    {
+        return $"Attack: {Attack}, Defense: {Defense}, " +
+               $"Health: {Resources.CurrentHealth}/{MaxHealth}, " +
+               $"Resource: {Resources.CurrentResource}/{MaxResource}";
+    }
 }
