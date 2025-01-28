@@ -6,6 +6,10 @@ public class Player : Entity, IResourceProvider
     private Camera _mainCamera;
     private int _entityLayer;
     private Enemy _currentTarget;
+    
+    public event Action<Entity> OnTargetChanged;
+    public Entity CurrentTarget => _currentTarget;
+    
     public PlayerController PlayerController { get; private set; }
     public CameraController CameraController { get; private set; }
     public CharacterLeveling CharacterLeveling { get; private set; }
@@ -36,6 +40,10 @@ public class Player : Entity, IResourceProvider
     {
         base.Update();
         UpdateTargeting();
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Attack();
+        }
     }
 
     #region Heath and Resource
@@ -95,17 +103,21 @@ public class Player : Entity, IResourceProvider
 
     private void SetTarget(Enemy newTarget)
     {
-        // Clear highlight from old target
         if (_currentTarget is { } previousTarget)
         {
             previousTarget.OnUntargeted();
         }
 
         _currentTarget = newTarget;
-
-        // Highlight new target
+        
         newTarget?.OnTargeted();
+        OnTargetChanged?.Invoke(_currentTarget);
     }
 
     #endregion
+    
+    private void Attack()
+    {
+        _currentTarget?.TakeDamage(Stats.Attack);
+    }
 }

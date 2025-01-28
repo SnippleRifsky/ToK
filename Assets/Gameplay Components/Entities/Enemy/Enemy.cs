@@ -1,10 +1,19 @@
+using System;
 using UnityEngine;
 
-public class Enemy : Entity
+public class Enemy : Entity, IHealthProvider
 {
     private UIEntityNameplate _entityNameplate;
     private MeshRenderer _meshRenderer;
     private Material _originalMaterial;
+    
+    public float CurrentHealth => Stats.Resources.CurrentHealth;
+    public float MaxHealth => Stats.MaxHealth;
+    public event Action<float> OnHealthChanged
+    {
+        add => Stats.Resources.OnHealthChanged += value;
+        remove => Stats.Resources.OnHealthChanged -= value;
+    }
 
     protected override void Awake()
     {
@@ -12,7 +21,6 @@ public class Enemy : Entity
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
         if (_meshRenderer != null)
         {
-            // Store the original material
             _originalMaterial = _meshRenderer.material;
         }
     }
@@ -26,8 +34,6 @@ public class Enemy : Entity
     {
         if (_meshRenderer is not null)
         {
-            // You might want to create a highlighted material in your project
-            // and assign it here instead of just changing the color
             _meshRenderer.material.color = Color.red;
         }
     }
