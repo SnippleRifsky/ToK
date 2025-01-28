@@ -45,7 +45,19 @@ public class CameraController : MonoBehaviour
         _zoomAction = InputSystem.actions.FindAction("Zoom");
         _panAction = InputSystem.actions.FindAction("Pan");
         _camLockAction = InputSystem.actions.FindAction("Cam Lock");
-        _camera = GetComponentInChildren<Camera>();
+        // Wait for GameManager to be initialized
+        if (!GameManager.Instance.IsInitialized)
+        {
+            Debug.LogWarning("CameraController: GameManager not yet initialized!");
+        }
+        
+        _camera = GameManager.Instance.PlayerCamera;
+        
+        // Add null check
+        if (_camera == null)
+        {
+            Debug.LogError("CameraController: Failed to get PlayerCamera reference from GameManager");
+        }
         
         _entityLayerMask = LayerMask.GetMask("Entity");
 

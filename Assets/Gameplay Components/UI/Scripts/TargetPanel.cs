@@ -15,7 +15,7 @@ public class TargetPanel : MonoBehaviour
     {
         _healthBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Health Bar");
-        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        _player = GameManager.Instance.Player;
         if (_player is not null) _player.OnTargetChanged += HandleTargetChanged;
 
         var textComponents = GetComponentsInChildren<TextMeshProUGUI>();

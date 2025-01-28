@@ -15,7 +15,7 @@ public class CharacterPanel : MonoBehaviour
         _resourceBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Resource Bar");
 
-        _resourceProvider = GameObject.FindGameObjectWithTag("Player").GetComponent<IResourceProvider>();
+        _resourceProvider = GameManager.Instance.Player.GetComponent<IResourceProvider>();
         if (_resourceProvider is not null)
         {
             _resourceProvider.OnHealthChanged += UpdateHealthBar;

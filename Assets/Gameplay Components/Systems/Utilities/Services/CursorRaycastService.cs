@@ -32,7 +32,7 @@ public class CursorRaycastService : MonoBehaviour
         
         _instance = this;
         _entityLayer = LayerMask.GetMask("Entity");
-        _mainCamera = Camera.main;
+        _mainCamera = GameManager.Instance.PlayerCamera;
     }
     
     // ReSharper disable Unity.PerformanceAnalysis

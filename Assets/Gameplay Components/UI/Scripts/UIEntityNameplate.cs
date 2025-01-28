@@ -24,7 +24,7 @@ public class UIEntityNameplate : MonoBehaviour
 
     private void Start()
     {
-        _playerCamera = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Camera>();
+        _playerCamera = GameManager.Instance.PlayerCamera;
         _canvas = GetComponentInChildren<Canvas>();
 
         _healthBar = GetComponentsInChildren<Slider>()

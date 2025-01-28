@@ -33,11 +33,11 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _player = GetComponent<Player>();
+        _player = GameManager.Instance.Player;
         _moveAction = InputSystem.actions.FindAction("Move");
         _jumpAction = InputSystem.actions.FindAction("Jump");
         _characterController = GetComponent<CharacterController>();
-        _camera = GetComponentInChildren<Camera>();
+        _camera = GameManager.Instance.PlayerCamera;
         _cameraController = _player.CameraController;
         _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
         _playerBody = GetComponentInChildren<MeshRenderer>().transform;
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
     private void HandleMovement()
     {
         _tracker.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
-        //TODO un-fuck this abomination
+
         var moveInput = _moveAction.ReadValue<Vector2>();
         var camLocked = _cameraController.IsLocked;
         if (_characterController.isGrounded && camLocked)
