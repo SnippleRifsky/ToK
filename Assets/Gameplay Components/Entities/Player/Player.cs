@@ -18,7 +18,7 @@ public class Player : Entity, IResourceProvider
     {
         SetupPlayer();
         Stats = new Stats(new StatsMediator(), baseStats);
-        _mainCamera = GetComponentInChildren<Camera>();
+        _mainCamera = GameManager.Instance.PlayerCamera;
         _entityLayer = LayerMask.GetMask("Entity");
     }
     
