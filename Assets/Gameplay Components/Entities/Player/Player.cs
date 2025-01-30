@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : Entity, IResourceProvider
@@ -6,13 +8,18 @@ public class Player : Entity, IResourceProvider
     private Camera _mainCamera;
     private int _entityLayer;
     private Enemy _currentTarget;
-    
+
     public event Action<Entity> OnTargetChanged;
     public Entity CurrentTarget => _currentTarget;
-    
+
     public PlayerController PlayerController { get; private set; }
     public CameraController CameraController { get; private set; }
     public CharacterLeveling CharacterLeveling { get; private set; }
+
+    [SerializeField] private float viewRange = 10f;
+
+    private HashSet<Entity> _entitiesInRange = new();
+    private HashSet<Entity> _previousEntitiesInRange = new();
 
     protected override void Awake()
     {
@@ -21,7 +28,7 @@ public class Player : Entity, IResourceProvider
         _mainCamera = GameManager.Instance.PlayerCamera;
         _entityLayer = LayerMask.GetMask("Entity");
     }
-    
+
     private void SetupPlayer()
     {
         PlayerController = gameObject.AddComponent<PlayerController>();
@@ -40,30 +47,42 @@ public class Player : Entity, IResourceProvider
     {
         base.Update();
         UpdateTargeting();
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1)) Attack();
+        
+        (_previousEntitiesInRange, _entitiesInRange) = (_entitiesInRange, _previousEntitiesInRange);
+        _entitiesInRange.Clear();
+
+        foreach (var entity in FindEntitiesInRange())
         {
-            Attack();
+            _entitiesInRange.Add(entity);
+            if (!_previousEntitiesInRange.Contains(entity))
+                UIManager.Instance.ShowEntityNameplate(entity);
         }
+        
+        foreach (var entity in _previousEntitiesInRange.Where(entity => !_entitiesInRange.Contains(entity)))
+            UIManager.Instance.HideEntityNameplate(entity);
     }
 
     #region Heath and Resource
 
     public float CurrentHealth => Stats.Resources.CurrentHealth;
     public float MaxHealth => Stats.MaxHealth;
+
     public event Action<float> OnHealthChanged
     {
         add => Stats.Resources.OnHealthChanged += value;
         remove => Stats.Resources.OnHealthChanged -= value;
     }
-        
+
     public float CurrentResource => Stats.Resources.CurrentResource;
     public float MaxResource => Stats.MaxResource;
+
     public event Action<float> OnResourceChanged
     {
         add => Stats.Resources.OnResourceChanged += value;
         remove => Stats.Resources.OnResourceChanged -= value;
     }
-    
+
     public void SpendResource(float amount)
     {
         Stats.Resources.CurrentResource -= amount;
@@ -80,44 +99,46 @@ public class Player : Entity, IResourceProvider
 
     private void UpdateTargeting()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (CursorRaycastService.Instance.TryGetEntityUnderCursor(out var hitEntity))
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (CursorRaycastService.Instance.TryGetEntityUnderCursor(out var hitEntity))
+            switch (hitEntity)
             {
-                switch (hitEntity)
-                {
-                    case Enemy enemy:
-                        SetTarget(enemy);
-                        break;
-                    default:
-                        SetTarget(null);
-                        break;
-                }
+                case Enemy enemy:
+                    SetTarget(enemy);
+                    break;
+                default:
+                    SetTarget(null);
+                    break;
             }
-            else
-            {
-                SetTarget(null);
-            }
-        }
+        else
+            SetTarget(null);
     }
 
     private void SetTarget(Enemy newTarget)
     {
-        if (_currentTarget is { } previousTarget)
-        {
-            previousTarget.OnUntargeted();
-        }
+        if (_currentTarget is { } previousTarget) previousTarget.OnUntargeted();
 
         _currentTarget = newTarget;
-        
+
         newTarget?.OnTargeted();
         OnTargetChanged?.Invoke(_currentTarget);
     }
 
     #endregion
-    
+
     private void Attack()
     {
         _currentTarget?.TakeDamage(Stats.Attack);
+    }
+
+    public IEnumerable<Entity> FindEntitiesInRange()
+    {
+        var entities = new List<Entity>();
+        var hits = Physics.OverlapSphere(transform.position, viewRange, _entityLayer);
+        foreach (var hit in hits)
+            if (hit.TryGetComponent(out Entity entity))
+                entities.Add(entity);
+
+        return entities;
     }
 }
