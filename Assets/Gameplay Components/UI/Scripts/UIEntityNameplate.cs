@@ -5,39 +5,39 @@ using UnityEngine.UI;
 
 public class UIEntityNameplate : MonoBehaviour
 {
-    private Canvas _canvas;
+    private CapsuleCollider _collider;
     private Entity _entity;
     private Slider _healthBar;
     private TextMeshProUGUI _levelLabel;
     private TextMeshProUGUI _nameLabel;
-    private Camera _playerCamera;
 
-
-    private void Awake()
+    public void Setup(Entity entity)
     {
-        _entity = gameObject.GetComponent<Entity>();
+        _entity = entity;
         _levelLabel = GetComponentsInChildren<TextMeshProUGUI>()
-            .FirstOrDefault(text => text.gameObject.name == "Level Label");
+            .FirstOrDefault(text => text.gameObject.name == "EntityLevelTag");
         _nameLabel = GetComponentsInChildren<TextMeshProUGUI>()
-            .FirstOrDefault(text => text.gameObject.name == "Entity Name");
-    }
-
-    private void Start()
-    {
-        _playerCamera = GameManager.Instance.PlayerCamera;
-        _canvas = GetComponentInChildren<Canvas>();
-
-        _healthBar = GetComponentsInChildren<Slider>()
-            .FirstOrDefault(slider => slider.gameObject.name == "Health Bar");
+            .FirstOrDefault(text => text.gameObject.name == "EntityNameTag");
+        _healthBar = GetComponent<Slider>();
         if (_entity.Stats is not null)
             _entity.Stats.Resources.OnHealthChanged += UpdateHealthBar;
         else
             Debug.LogWarning("Failed to bind to OnHealthChanged event");
+        _collider = entity.GetComponent<CapsuleCollider>();
     }
 
     private void Update()
     {
-        UpdateUI();
+        if (!gameObject.activeSelf) return;
+        if (_entity is not null) UpdateUIText();
+    }
+
+    public void Clear()
+    {
+        _entity = null;
+        _levelLabel.text = string.Empty;
+        _nameLabel.text = string.Empty;
+        _collider = null;
     }
 
     private void OnDestroy()
@@ -47,23 +47,19 @@ public class UIEntityNameplate : MonoBehaviour
 
     private void UpdateHealthBar(float newHealth)
     {
+        if (!gameObject.activeSelf) return;
         _healthBar.value = newHealth / _entity.Stats.MaxHealth;
-    }
-
-    private void RotateUI()
-    {
-        _canvas.transform.LookAt(_playerCamera.transform);
     }
 
     private void UpdateUIText()
     {
+        if (!gameObject.activeSelf) return;
         _levelLabel.text = _entity.Level.ToString();
         _nameLabel.text = _entity.EntityName;
     }
 
-    private void UpdateUI()
+    public CapsuleCollider GetCachedCollider()
     {
-        RotateUI();
-        UpdateUIText();
+        return _collider;
     }
 }

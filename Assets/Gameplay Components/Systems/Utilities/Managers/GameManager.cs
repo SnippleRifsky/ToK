@@ -3,27 +3,31 @@
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
+
     public static GameManager Instance
     {
         get
         {
             if (_instance == null)
             {
-                _instance = Object.FindFirstObjectByType<GameManager>();
+                _instance = FindFirstObjectByType<GameManager>();
                 if (_instance == null)
                 {
-                    GameObject go = new GameObject("GameManager");
+                    var go = new GameObject("GameManager");
                     _instance = go.AddComponent<GameManager>();
                 }
             }
+
             return _instance;
         }
     }
-    
+
     public bool IsInitialized { get; set; }
-    
+
+    public UIManager UIManager { get; private set; }
+
     public Player Player { get; private set; }
-    
+
     public Camera PlayerCamera { get; private set; }
 
     private void Awake()
@@ -36,7 +40,7 @@ public class GameManager : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
-        
+
         InitializeReferences();
         IsInitialized = true;
     }
@@ -49,11 +53,10 @@ public class GameManager : MonoBehaviour
             Debug.LogError("GameManager: Player not found!");
             return;
         }
-        
+
         PlayerCamera = Player.GetComponentInChildren<Camera>();
-        if (PlayerCamera is null) 
-        {
-            Debug.LogError("GameManager: Player Camera not found!");
-        }
+        if (PlayerCamera is null) Debug.LogError("GameManager: Player Camera not found!");
+
+        UIManager = UIManager.Instance;
     }
 }

@@ -37,26 +37,25 @@ public class TargetPanel : MonoBehaviour
     {
         if (_currentTarget != null) _currentTarget.OnHealthChanged -= UpdateHealthBar;
 
-        if (newTarget is null)
+        switch (newTarget)
         {
-            gameObject.SetActive(false);
-            return;
-        }
+            case null:
+                gameObject.SetActive(false);
+                return;
+            case IHealthProvider healthProvider:
+                _currentTarget = healthProvider;
+                _currentTarget.OnHealthChanged += UpdateHealthBar;
 
-        if (newTarget is IHealthProvider healthProvider)
-        {
-            _currentTarget = healthProvider;
-            _currentTarget.OnHealthChanged += UpdateHealthBar;
-
-            UpdateHealthBar(_currentTarget.CurrentHealth);
-            gameObject.SetActive(true);
+                UpdateHealthBar(_currentTarget.CurrentHealth);
+                gameObject.SetActive(true);
+                break;
         }
 
         _entityNameText.text = newTarget.EntityName;
         if (newTarget is Enemy enemy)
             _entityLevelText.text = enemy.Level.ToString();
         else
-            _entityLevelText.text = "";
+            _entityLevelText.text = string.Empty;
     }
 
     private void OnDestroy()
