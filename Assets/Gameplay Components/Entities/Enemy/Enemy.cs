@@ -26,13 +26,13 @@ public class Enemy : Entity, IHealthProvider
         _originalMaterialColor = _meshRenderer.material.color;
         if (_meshRenderer is null) return;
         _meshRenderer.material.color = Color.red;
-        GameManager.Instance.UIManager.ShowEntityNameplate(this);
+        GameManager.Instance.UIManager.NameplateManager.ShowEntityNameplate(this);
     }
 
     public void OnUntargeted()
     {
         if (_meshRenderer is null) return;
         _meshRenderer.material.color = _originalMaterialColor;
-        GameManager.Instance.UIManager.HideEntityNameplate(this);
+        GameManager.Instance.UIManager.NameplateManager.HideEntityNameplate(this);
     }
 }
