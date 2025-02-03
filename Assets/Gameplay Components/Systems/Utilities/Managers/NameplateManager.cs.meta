@@ -4,7 +4,7 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - uiEntityNameplatePrefab: {fileID: 7479259158922584255, guid: c8e665a1ddad26841809abcccda6d78a, type: 3}
+  - _entityNameplatePrefab: {fileID: 7479259158922584255, guid: c8e665a1ddad26841809abcccda6d78a, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
