@@ -3,33 +3,37 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Parameters")] [SerializeField]
-    private float walkSpeed = 3f;
+    [Header("Movement Parameters")] 
+    [SerializeField] private float walkSpeed = 3f;
 
-    [Header("Jump Parameters")] [SerializeField]
-    private float jumpForce = 3f;
-
+    [Header("Jump Parameters")] 
+    [SerializeField] private float jumpForce = 3f;
     [SerializeField] private float gravity = -9.81f;
 
-    [Header("Rotation Parameters")] [SerializeField]
-    public float smoothTime = 0.2f;
+    [Header("Rotation Parameters")] 
+    [SerializeField] private float smoothTime = 0.2f;
 
-    private readonly float _groundRayDistance = 1f;
+    private const float GroundedYVelocity = -0.5f;
+    private const float SlopeRayMultiplier = 1.1f;
 
+    private readonly float _groundCheckDistance = 1f;
     private readonly float _slopeSlideSpeed = 2f;
+
+    // References
     private Camera _camera;
     private CameraController _cameraController;
-
     private CharacterController _characterController;
-    private Vector3 _currentMovement;
-    private InputAction _jumpAction;
-
-    private InputAction _moveAction;
     private Player _player;
     private Transform _playerBody;
-    private RaycastHit _slopeHit;
-
     private Transform _tracker;
+
+    // Input Actions
+    private InputAction _jumpAction;
+    private InputAction _moveAction;
+
+    // State
+    private Vector3 _currentMovement;
+    private RaycastHit _slopeHit;
 
     private void Start()
     {
@@ -45,46 +49,51 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        HandleAllMovement();
+        ProcessMovement();
     }
 
-    private void HandleAllMovement()
+    private void ProcessMovement()
     {
-        HandleMovement();
-        HandleJump();
-        HandleRotation();
+        ProcessHorizontalMovement();
+        ProcessVerticalMovement();
+        ProcessPlayerRotation();
     }
 
-    private void HandleMovement()
+    private void ProcessHorizontalMovement()
     {
-        _tracker.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
+        AlignTrackerToCamera();
 
-        var moveInput = _moveAction.ReadValue<Vector2>();
-        var camLocked = _cameraController.IsLocked;
-        if (_characterController.isGrounded && camLocked)
+        Vector2 moveInput = _moveAction.ReadValue<Vector2>();
+        bool isCameraLocked = _cameraController.IsLocked;
+
+        // Calculate movement direction
+        if (_characterController.isGrounded)
         {
-            var trackerDirection = GetDirection(_tracker.transform);
-            _currentMovement.x = trackerDirection.x;
-            _currentMovement.z = trackerDirection.z;
-        }
-        else if (_characterController.isGrounded)
-        {
-            var playerDirection = GetDirection(_playerBody.transform);
-            _currentMovement.x = playerDirection.x;
-            _currentMovement.z = playerDirection.z;
+            Transform reference = isCameraLocked ? _tracker : _playerBody;
+            Vector3 direction = GetMovementDirection(reference);
+            _currentMovement.x = direction.x;
+            _currentMovement.z = direction.z;
         }
 
-        if (OnSteepSlope()) SteepSlopeMovement();
+        if (IsOnSteepSlope())
+        {
+            HandleSteepSlopeMovement();
+        }
 
+        // Apply movement
         _characterController.Move(_currentMovement * (walkSpeed * Time.deltaTime));
     }
 
-    private void HandleJump()
+    private void ProcessVerticalMovement()
     {
         if (_characterController.isGrounded)
         {
-            _currentMovement.y = -0.5f;
-            if (_jumpAction.IsPressed()) _currentMovement.y = jumpForce;
+            _currentMovement.y = GroundedYVelocity;
+
+            if (_jumpAction.IsPressed())
+            {
+                _currentMovement.y = jumpForce;
+            }
         }
         else
         {
@@ -92,59 +101,71 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleRotation()
+    private void ProcessPlayerRotation()
     {
         if (_moveAction.ReadValue<Vector2>() == Vector2.zero) return;
-        if (_cameraController.IsLocked)
-        {
-            var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
-            _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
-        }
-        else
-        {
-            if (_moveAction.ReadValue<Vector2>().y >= 0)
-            {
-                var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
-                _playerBody.forward = Vector3.Slerp(_playerBody.forward, targetRotation, Time.deltaTime / smoothTime);
-            }
-            else
-            {
-                var targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
-                _playerBody.forward = Vector3.Slerp(_playerBody.forward, -targetRotation, Time.deltaTime / smoothTime);
-            }
-        }
+
+        Vector3 targetRotation = CalculateRotationTarget();
+
+        _playerBody.forward = Vector3.Slerp(
+            _playerBody.forward,
+            targetRotation,
+            Time.deltaTime / smoothTime
+        );
     }
 
-    private Vector3 GetDirection(Transform target)
+    private void AlignTrackerToCamera()
     {
-        var targetDirection = target.forward * _moveAction.ReadValue<Vector2>().y +
-                              target.right * _moveAction.ReadValue<Vector2>().x;
-        targetDirection.Normalize();
-        return targetDirection;
+        _tracker.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
     }
 
-    #region SlopeMovement
+    private Vector3 GetMovementDirection(Transform reference)
+    {
+        Vector2 moveInput = _moveAction.ReadValue<Vector2>();
+        Vector3 direction = reference.forward * moveInput.y + reference.right * moveInput.x;
+        direction.Normalize();
+        return direction;
+    }
 
-    private bool OnSteepSlope()
+    private Vector3 CalculateRotationTarget()
+    {
+        Vector2 moveInput = _moveAction.ReadValue<Vector2>();
+        Vector3 targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
+
+        if (!_cameraController.IsLocked && moveInput.y < 0)
+        {
+            targetRotation = -targetRotation;
+        }
+
+        return targetRotation;
+    }
+
+    #region Slope Movement
+    private bool IsOnSteepSlope()
     {
         if (!_characterController.isGrounded) return false;
-        var slopeRay = new Ray(_playerBody.position, Vector3.down);
 
-        if (!Physics.SphereCast(slopeRay, _characterController.radius * 1.1f, out _slopeHit,
-                _characterController.height / 2 * _groundRayDistance)) return false;
-
-        var slopeAngle = Vector3.Angle(Vector3.up, _slopeHit.normal);
-        return slopeAngle >= _characterController.slopeLimit;
+        Ray slopeRay = new Ray(_playerBody.position, Vector3.down);
+        return Physics.SphereCast(
+            slopeRay,
+            _characterController.radius * SlopeRayMultiplier,
+            out _slopeHit,
+            _characterController.height / 2 * _groundCheckDistance
+        ) && Vector3.Angle(Vector3.up, _slopeHit.normal) >= _characterController.slopeLimit;
     }
 
-    private void SteepSlopeMovement()
+    private void HandleSteepSlopeMovement()
     {
-        var slopeDirection = Vector3.up - _slopeHit.normal * Vector3.Dot(Vector3.up, _slopeHit.normal);
-        var slideSpeed = walkSpeed - _slopeSlideSpeed;
+        Vector3 slopeDirection = GetSlopeInfo();
+        float slideSpeed = walkSpeed - _slopeSlideSpeed;
 
         _currentMovement = slopeDirection * -slideSpeed;
-        _currentMovement.y = _currentMovement.y - _slopeHit.point.y;
+        _currentMovement.y -= _slopeHit.point.y;
     }
 
+    private Vector3 GetSlopeInfo()
+    {
+        return Vector3.up - _slopeHit.normal * Vector3.Dot(Vector3.up, _slopeHit.normal);
+    }
     #endregion
 }
