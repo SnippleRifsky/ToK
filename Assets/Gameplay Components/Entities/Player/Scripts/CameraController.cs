@@ -4,126 +4,140 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
+    // Constants
     private const float CamClipOffset = 0.55f;
     private const float DistanceOffset = -0.2f;
+    private const float RaycastSphereRadius = 0.5f;
+    private const float ZoomMultiplier = -1f;
 
-    [Header("Camera Movement Parameters")] [SerializeField]
-    private float lookSensitivity = 0.5f;
-
+    [Header("Camera Movement Parameters")]
+    [SerializeField] private float lookSensitivity = 0.5f;
     [SerializeField] private float minPitch = -80f;
     [SerializeField] private float maxPitch = 80f;
 
-    [Header("Camera Zoom Parameters")] [SerializeField]
-    private float minZoom = 2f;
-
+    [Header("Camera Zoom Parameters")]
+    [SerializeField] private float minZoom = 2f;
     [SerializeField] private float maxZoom = 20f;
 
-    [Header("Camera Collision Parameters")] [SerializeField]
-    private LayerMask layerMask = 0;
+    [Header("Camera Collision Parameters")]
+    [SerializeField] private LayerMask _collisionLayerMask;
 
-    [Header("Debug Variables")] [SerializeField]
-    private bool isDebug;
+    [Header("Debug Variables")]
+    [SerializeField] private bool isDebug;
 
+    // Camera and Input
     private Camera _camera;
-    private InputAction _camLockAction;
-    private float _currentX;
-    private float _currentY;
-    private float _distance;
-    private RaycastHit _hit;
-    [Header("Camera Input")] private InputAction _lookAction;
     private Vector2 _lookInput;
+    private float _currentX = 0f;
+    private float _currentY = 0f;
+    private float _currentZoom = 10f;
+
+    // Input Actions
+    private InputAction _lookAction;
     private InputAction _panAction;
     private InputAction _zoomAction;
-    private float _zoomValue = 10f;
+    private InputAction _camLockAction;
+
+    // States
     private bool IsPanning { get; set; }
     public bool IsLocked { get; private set; }
-    private LayerMask _entityLayerMask;
+
+    private RaycastHit _hit;
 
     private void Awake()
     {
+        // Initialize input actions
         _lookAction = InputSystem.actions.FindAction("Look");
         _zoomAction = InputSystem.actions.FindAction("Zoom");
         _panAction = InputSystem.actions.FindAction("Pan");
         _camLockAction = InputSystem.actions.FindAction("Cam Lock");
-        // Wait for GameManager to be initialized
+
+        // Initialize camera
         if (!GameManager.Instance.IsInitialized)
         {
-            Debug.LogWarning("CameraController: GameManager not yet initialized!");
+            Debug.LogWarning("CameraController: GameManager not initialized!");
         }
-        
+
         _camera = GameManager.Instance.PlayerCamera;
-        
-        // Add null check
+
         if (_camera == null)
         {
-            Debug.LogError("CameraController: Failed to get PlayerCamera reference from GameManager");
+            Debug.LogError("CameraController: Camera reference missing!");
         }
-        
-        _entityLayerMask = LayerMask.GetMask("Entity");
 
         Cursor.lockState = CursorLockMode.Confined;
     }
 
     private void Update()
     {
-        CameraRotation();
-        Zoom();
+        HandleInput();
+        HandleCameraRotation();
+        HandleZoom();
         DetectOcclusion();
     }
-    
-    private bool ShouldAllowPanning()
-    {
-        return !CursorRaycastService.Instance.IsPointerOverEntity() && !EventSystem.current.IsPointerOverGameObject();
-    }
 
-    private void CameraRotation()
+    private void HandleCameraRotation()
     {
-        HandleInput();
         if (IsPanning || IsLocked)
         {
             _currentX += _lookInput.x * lookSensitivity;
             _currentY += _lookInput.y * lookSensitivity;
+            ClampCameraRotation();
 
-            _currentY = Mathf.Clamp(_currentY, minPitch, maxPitch);
-
-            var direction = new Vector3(0, 0, -_distance);
-            var rotation = Quaternion.Euler(_currentY, _currentX, 0);
-            _camera.transform.position = gameObject.transform.position + rotation * direction;
+            Vector3 direction = new Vector3(0, 0, -_currentZoom);
+            Quaternion rotation = Quaternion.Euler(_currentY, _currentX, 0);
+            _camera.transform.position = transform.position + rotation * direction;
         }
 
-        _camera.transform.LookAt(gameObject.transform.position);
+        _camera.transform.LookAt(transform.position);
     }
 
-    private void Zoom()
+    private void HandleZoom()
     {
-        var zoomInput = _zoomAction.ReadValue<Vector2>();
-        _zoomValue += zoomInput.y * -1;
-        _zoomValue = Mathf.Clamp(_zoomValue, minZoom, maxZoom);
-        _distance = _zoomValue;
+        float zoomInput = _zoomAction.ReadValue<Vector2>().y * ZoomMultiplier;
+        _currentZoom = Mathf.Clamp(_currentZoom + zoomInput, minZoom, maxZoom);
     }
 
     private void DetectOcclusion()
     {
-        var playerPosition = gameObject.transform.position;
-        var camRay = new Ray(playerPosition,
-            (_camera.transform.position - gameObject.transform.position).normalized);
+        Ray camRay = GetCameraRay();
 
-        if (!Physics.SphereCast(camRay, 0.5f, out _hit, _distance + DistanceOffset, 1 << layerMask)) return;
-        _camera.transform.position = _hit.point + _hit.normal.normalized * CamClipOffset;
+        if (Physics.SphereCast(camRay, RaycastSphereRadius, out _hit, _currentZoom + DistanceOffset, _collisionLayerMask))
+        {
+            _camera.transform.position = _hit.point + _hit.normal.normalized * CamClipOffset;
+        }
+    }
+
+    private Ray GetCameraRay()
+    {
+        Vector3 direction = (_camera.transform.position - transform.position).normalized;
+        return new Ray(transform.position, direction);
     }
 
     private void HandleInput()
     {
-        bool tryPanning = _panAction.ReadValue<float>() > 0; 
-        IsPanning = tryPanning && ShouldAllowPanning();
+        IsPanning = ShouldAllowPanning() && _panAction.ReadValue<float>() > 0;
         IsLocked = _camLockAction.ReadValue<float>() > 0;
         _lookInput = _lookAction.ReadValue<Vector2>();
-        if (EventSystem.current.IsPointerOverGameObject()) return;
-        SetCursorLock();
+
+        if (!EventSystem.current.IsPointerOverGameObject())
+        {
+            SetCursorLock();
+        }
+    }
+
+    private bool ShouldAllowPanning()
+    {
+        return !CursorRaycastService.Instance.IsCursorPointingAtEntity() && !EventSystem.current.IsPointerOverGameObject();
     }
 
     private void SetCursorLock()
     {
         Cursor.lockState = IsPanning || IsLocked ? CursorLockMode.Locked : CursorLockMode.Confined;
+    }
+
+    private void ClampCameraRotation()
+    {
+        _currentY = Mathf.Clamp(_currentY, minPitch, maxPitch);
     }
 }
