@@ -4,25 +4,13 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     private static UIManager _instance;
+    private const string UIManagerGameObjectName = "UIManager";
 
-    public static UIManager Instance
-    {
-        get
-        {
-            if (_instance is not null) return _instance;
-            _instance = FindFirstObjectByType<UIManager>();
-            if (_instance is not null) return _instance;
-            var go = new GameObject("UIManager");
-            _instance = go.AddComponent<UIManager>();
-
-            return _instance;
-        }
-    }
+    public static UIManager Instance => _instance ??= GetOrCreateInstance();
 
     public CharacterPanel CharacterPanel { get; private set; }
     public TargetPanel TargetPanel { get; private set; }
     public Canvas UICanvas { get; private set; }
-    
     public NameplateManager NameplateManager { get; private set; }
 
     private void Awake()
@@ -35,23 +23,35 @@ public class UIManager : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
-        InitializeUIReferences();
+        InitializeUIComponents();
     }
 
-    private void InitializeUIReferences()
+    private static UIManager GetOrCreateInstance()
     {
-        CharacterPanel = FindFirstObjectByType<CharacterPanel>();
-        if (CharacterPanel is null)
-        {
-            Debug.LogError("UIManager: CharacterPanel not found!");
-            return;
-        }
+        var existingInstance = FindFirstObjectByType<UIManager>();
+        if (existingInstance != null) return existingInstance;
 
-        TargetPanel = FindFirstObjectByType<TargetPanel>();
-        if (TargetPanel is null) Debug.LogError("UIManager: TargetPanel not found!");
+        var go = new GameObject(UIManagerGameObjectName);
+        return go.AddComponent<UIManager>();
+    }
 
-        UICanvas = FindFirstObjectByType<Canvas>();
+    private void InitializeUIComponents()
+    {
+        CharacterPanel = TryFindComponent<CharacterPanel>();
+        TargetPanel = TryFindComponent<TargetPanel>();
+        UICanvas = TryFindComponent<Canvas>();
+
         NameplateManager = gameObject.AddComponent<NameplateManager>();
         NameplateManager.Initialize();
+    }
+
+    private T TryFindComponent<T>() where T : Component
+    {
+        var component = FindFirstObjectByType<T>();
+        if (component == null)
+        {
+            Debug.LogError($"{nameof(UIManager)}: {typeof(T).Name} not found!");
+        }
+        return component;
     }
 }
