@@ -2235,8 +2235,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
-  level: 1
-  entityName: Giant Rat
+  level: 0
+  entityName: 
+  enemyConfig: {fileID: 11400000, guid: a3ebb862d8a37e748b6459f0c7e374fd, type: 2}
 --- !u!136 &392179188
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4031,6 +4032,7 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
   level: 1
   entityName: Giant Rat
+  enemyConfig: {fileID: 0}
 --- !u!65 &872053083
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9778,6 +9780,7 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
   level: 1
   entityName: Giant Rat
+  enemyConfig: {fileID: 0}
 --- !u!65 &2071797297
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10003,6 +10006,7 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
   level: 1
   entityName: Giant Rat
+  enemyConfig: {fileID: 0}
 --- !u!65 &2130471344
 BoxCollider:
   m_ObjectHideFlags: 0
