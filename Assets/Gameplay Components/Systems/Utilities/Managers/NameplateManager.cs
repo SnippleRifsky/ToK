@@ -5,8 +5,7 @@ public class NameplateManager : MonoBehaviour
 {
     private Canvas _uiCanvas;
 
-    [SerializeField]
-    private GameObject _entityNameplatePrefab;
+    [SerializeField] private GameObject _entityNameplatePrefab;
 
     private readonly Queue<UIEntityNameplate> _nameplatePool = new();
     private readonly Dictionary<Entity, UIEntityNameplate> _activeNameplates = new();
@@ -18,6 +17,7 @@ public class NameplateManager : MonoBehaviour
     public void Initialize()
     {
         _uiCanvas = UIManager.Instance.UICanvas;
+        EventBus.Subscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
     }
 
     #endregion
@@ -32,15 +32,13 @@ public class NameplateManager : MonoBehaviour
         nameplate.Setup(entity);
         UpdateNameplatePosition(nameplate, entity);
         _activeNameplates[entity] = nameplate;
-        
+
         if (entity is IHealthProvider healthProvider)
-        {
             EventBus.Publish(new EntityEvents.HealthChanged(
                 healthProvider.CurrentHealth,
                 healthProvider.MaxHealth,
                 healthProvider
             ));
-        }
     }
 
     public void HideEntityNameplate(Entity entity)
@@ -58,10 +56,7 @@ public class NameplateManager : MonoBehaviour
 
     private UIEntityNameplate GetNameplateFromPool()
     {
-        if (_nameplatePool.Count > 0)
-        {
-            return _nameplatePool.Dequeue();
-        }
+        if (_nameplatePool.Count > 0) return _nameplatePool.Dequeue();
 
         var newNameplate = Instantiate(_entityNameplatePrefab, _uiCanvas.transform)
             .GetComponent<UIEntityNameplate>();
@@ -87,10 +82,7 @@ public class NameplateManager : MonoBehaviour
         var worldPosition = entity.transform.position;
 
         var entityCollider = nameplate.GetCachedCollider();
-        if (entityCollider is not null)
-        {
-            worldPosition.y += entityCollider.bounds.extents.y;
-        }
+        if (entityCollider is not null) worldPosition.y += entityCollider.bounds.extents.y;
 
         return GameManager.Instance.PlayerCamera.WorldToScreenPoint(worldPosition);
     }
@@ -117,4 +109,18 @@ public class NameplateManager : MonoBehaviour
     }
 
     #endregion
+
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
+    }
+
+    private void OnEntityDestroyed(EntityEvents.EntityDeathEvent evt)
+    {
+        if (_activeNameplates.TryGetValue(evt.Entity, out var nameplate))
+        {
+            Destroy(nameplate.gameObject);
+            _activeNameplates.Remove(evt.Entity);
+        }
+    }
 }
