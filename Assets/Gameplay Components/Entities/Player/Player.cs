@@ -56,11 +56,17 @@ public class Player : Entity, IResourceProvider
         {
             _entitiesInRange.Add(entity);
             if (!_previousEntitiesInRange.Contains(entity))
+            {
+                EventBus.Publish(new EntityEvents.DetectionStatusChanged(entity, true, this));
                 UIManager.Instance.NameplateManager.ShowEntityNameplate(entity);
+            }
         }
-        
+
         foreach (var entity in _previousEntitiesInRange.Where(entity => !_entitiesInRange.Contains(entity)))
+        {
+            EventBus.Publish(new EntityEvents.DetectionStatusChanged(entity, false, this));
             UIManager.Instance.NameplateManager.HideEntityNameplate(entity);
+        }
     }
 
     #region Heath and Resource
