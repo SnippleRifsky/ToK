@@ -8,8 +8,7 @@ public class Player : Entity, IResourceProvider
     private Camera _mainCamera;
     private int _entityLayer;
     private Enemy _currentTarget;
-
-    public event Action<Entity> OnTargetChanged;
+    
     public Entity CurrentTarget => _currentTarget;
 
     public PlayerController PlayerController { get; private set; }
