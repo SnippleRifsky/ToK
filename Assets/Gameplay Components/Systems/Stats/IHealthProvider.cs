@@ -1,6 +1,4 @@
-﻿using System;
-
-public interface IHealthProvider
+﻿public interface IHealthProvider
 {
     float CurrentHealth { get; }
     float MaxHealth { get; }

@@ -12,6 +12,8 @@ public class Entity : MonoBehaviour
     private CapsuleCollider _collider;
     public Stats Stats { get; protected set; }
 
+    private bool _isDying;
+
     public int Level
     {
         get => level;
@@ -33,15 +35,12 @@ public class Entity : MonoBehaviour
     protected virtual void OnEnable()
     {
         if (_collider == null) return;
-        CursorRaycastService.Instance.RegisterEntity(this, _collider as Collider);
+        CursorRaycastService.Instance.RegisterEntity(this, _collider);
     }
 
     protected virtual void OnDisable()
     {
-        if (_collider != null)
-        {
-            CursorRaycastService.Instance.UnregisterEntity(_collider);
-        }
+        if (_collider != null) CursorRaycastService.Instance.UnregisterEntity(_collider);
     }
 
     protected virtual void Update()
@@ -53,7 +52,15 @@ public class Entity : MonoBehaviour
 
     public virtual void TakeDamage(float damage)
     {
-        Stats.Resources.CurrentHealth -= damage;
+        if (damage >= Stats.Resources.CurrentHealth)
+        {
+            Stats.Resources.CurrentHealth = 0;
+            Die();
+        }
+        else
+        {
+            Stats.Resources.CurrentHealth -= damage;
+        }
     }
 
     public virtual void Heal(float heal)
@@ -62,4 +69,25 @@ public class Entity : MonoBehaviour
     }
 
     #endregion
+
+    public virtual void Die()
+    {
+        if (_isDying) return;
+        _isDying = true;
+
+        try
+        {
+            EventBus.Publish(new EntityEvents.EntityDeathEvent(this));
+
+            var components = GetComponents<IDestructible>();
+            foreach (var component in components) component.OnDestroy();
+
+            Destroy(gameObject);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error during entity death: {e.Message}");
+            _isDying = false;
+        }
+    }
 }

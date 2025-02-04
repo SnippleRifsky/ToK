@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ public class Player : Entity, IResourceProvider
     private int _entityLayer;
     private Enemy _currentTarget;
 
-    public event Action<Entity> OnTargetChanged;
     public Entity CurrentTarget => _currentTarget;
 
     public PlayerController PlayerController { get; private set; }
@@ -41,6 +39,8 @@ public class Player : Entity, IResourceProvider
             CameraController = child.AddComponent<CameraController>();
             break;
         }
+
+        EventBus.Subscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
     }
 
     protected override void Update()
@@ -48,7 +48,7 @@ public class Player : Entity, IResourceProvider
         base.Update();
         UpdateTargeting();
         if (Input.GetKeyDown(KeyCode.Alpha1)) Attack();
-        
+
         (_previousEntitiesInRange, _entitiesInRange) = (_entitiesInRange, _previousEntitiesInRange);
         _entitiesInRange.Clear();
 
@@ -56,11 +56,17 @@ public class Player : Entity, IResourceProvider
         {
             _entitiesInRange.Add(entity);
             if (!_previousEntitiesInRange.Contains(entity))
+            {
+                EventBus.Publish(new EntityEvents.DetectionStatusChanged(entity, true, this));
                 UIManager.Instance.NameplateManager.ShowEntityNameplate(entity);
+            }
         }
-        
+
         foreach (var entity in _previousEntitiesInRange.Where(entity => !_entitiesInRange.Contains(entity)))
+        {
+            EventBus.Publish(new EntityEvents.DetectionStatusChanged(entity, false, this));
             UIManager.Instance.NameplateManager.HideEntityNameplate(entity);
+        }
     }
 
     #region Heath and Resource
@@ -112,6 +118,11 @@ public class Player : Entity, IResourceProvider
         EventBus.Publish(new EntityEvents.TargetChanged(newTarget));
     }
 
+    private void OnEntityDestroyed(EntityEvents.EntityDeathEvent evt)
+    {
+        if (evt.Entity == _currentTarget) SetTarget(null);
+    }
+
     #endregion
 
     private void Attack()
@@ -128,5 +139,10 @@ public class Player : Entity, IResourceProvider
                 entities.Add(entity);
 
         return entities;
+    }
+
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
     }
 }
