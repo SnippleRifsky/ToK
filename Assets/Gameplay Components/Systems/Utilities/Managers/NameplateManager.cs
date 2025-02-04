@@ -32,6 +32,15 @@ public class NameplateManager : MonoBehaviour
         nameplate.Setup(entity);
         UpdateNameplatePosition(nameplate, entity);
         _activeNameplates[entity] = nameplate;
+        
+        if (entity is IHealthProvider healthProvider)
+        {
+            EventBus.Publish(new EntityEvents.HealthChanged(
+                healthProvider.CurrentHealth,
+                healthProvider.MaxHealth,
+                healthProvider
+            ));
+        }
     }
 
     public void HideEntityNameplate(Entity entity)
@@ -77,10 +86,10 @@ public class NameplateManager : MonoBehaviour
     {
         var worldPosition = entity.transform.position;
 
-        var collider = nameplate.GetCachedCollider();
-        if (collider != null)
+        var entityCollider = nameplate.GetCachedCollider();
+        if (entityCollider is not null)
         {
-            worldPosition.y += collider.bounds.extents.y;
+            worldPosition.y += entityCollider.bounds.extents.y;
         }
 
         return GameManager.Instance.PlayerCamera.WorldToScreenPoint(worldPosition);

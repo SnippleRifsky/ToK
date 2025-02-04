@@ -49,7 +49,7 @@ public class UIEntityNameplate : MonoBehaviour
 
     private void OnHealthChanged(EntityEvents.HealthChanged evt)
     {
-        if (!gameObject.activeSelf && ReferenceEquals(evt.Entity, _entity)) return;
+        if (!gameObject.activeSelf || !ReferenceEquals(evt.Entity, _entity)) return;
         _healthBar.value = evt.CurrentHealth / evt.MaxHealth;
     }
 
