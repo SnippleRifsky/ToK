@@ -20,7 +20,9 @@ public class UIEntityNameplate : MonoBehaviour
             .FirstOrDefault(text => text.gameObject.name == "EntityNameTag");
         _healthBar = GetComponent<Slider>();
         if (_entity.Stats is not null)
-            _entity.Stats.Resources.OnHealthChanged += UpdateHealthBar;
+        {
+            EventBus.Subscribe<EntityEvents.HealthChanged>(OnHealthChanged);
+        }
         else
             Debug.LogWarning("Failed to bind to OnHealthChanged event");
         _collider = entity.GetComponent<CapsuleCollider>();
@@ -42,13 +44,13 @@ public class UIEntityNameplate : MonoBehaviour
 
     private void OnDestroy()
     {
-        _entity.Stats.Resources.OnHealthChanged -= UpdateHealthBar;
+        EventBus.Unsubscribe<EntityEvents.HealthChanged>(OnHealthChanged);
     }
 
-    private void UpdateHealthBar(float newHealth)
+    private void OnHealthChanged(EntityEvents.HealthChanged evt)
     {
-        if (!gameObject.activeSelf) return;
-        _healthBar.value = newHealth / _entity.Stats.MaxHealth;
+        if (!gameObject.activeSelf && ReferenceEquals(evt.Entity, _entity)) return;
+        _healthBar.value = evt.CurrentHealth / evt.MaxHealth;
     }
 
     private void UpdateUIText()

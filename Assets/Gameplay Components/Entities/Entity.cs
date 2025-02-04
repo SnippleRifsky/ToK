@@ -26,7 +26,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void Awake()
     {
-        Stats = new Stats(new StatsMediator(), baseStats);
+        Stats = new Stats(new StatsMediator(), baseStats, gameObject);
         _collider = GetComponent<CapsuleCollider>();
     }
 

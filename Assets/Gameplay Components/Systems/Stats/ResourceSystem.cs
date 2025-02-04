@@ -4,12 +4,14 @@ using UnityEngine;
 public class ResourceSystem
 {
     private readonly Stats stats;
+    private readonly GameObject owner;
     private float currentHealth;
     private float currentResource;
 
-    public ResourceSystem(Stats stats)
+    public ResourceSystem(Stats stats, GameObject owner)
     {
         this.stats = stats;
+        this.owner = owner;
         CurrentHealth = stats.MaxHealth;
         CurrentResource = stats.MaxResource;
     }
@@ -20,7 +22,10 @@ public class ResourceSystem
         set
         {
             currentHealth = Mathf.Clamp(value, 0, stats.MaxHealth);
-            OnHealthChanged?.Invoke(CurrentHealth);
+            if (owner.TryGetComponent<IHealthProvider>(out var healthProvider))
+            {
+                EventBus.Publish(new EntityEvents.HealthChanged(currentHealth, stats.MaxHealth, healthProvider));
+            }
         }
     }
 
@@ -30,17 +35,16 @@ public class ResourceSystem
         set
         {
             currentResource = Mathf.Clamp(value, 0, stats.MaxResource);
-            OnResourceChanged?.Invoke(CurrentResource);
+            if (owner.TryGetComponent<IResourceProvider>(out var resourceProvider))
+            { 
+                EventBus.Publish(new EntityEvents.ResourceChanged(currentResource, stats.MaxResource, resourceProvider));
+            }
         }
     }
-
-    public event Action<float> OnHealthChanged;
-    public event Action<float> OnResourceChanged;
 
     public void Update(float deltaTime)
     {
         if (CurrentHealth < stats.MaxHealth) CurrentHealth += stats.HealthRegen * deltaTime;
-
         if (CurrentResource < stats.MaxResource) CurrentResource += stats.ResourceRegen * deltaTime;
     }
 }

@@ -10,29 +10,20 @@ public class GameManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindFirstObjectByType<GameManager>();
-                if (_instance == null)
-                {
-                    var go = new GameObject("GameManager");
-                    _instance = go.AddComponent<GameManager>();
-                }
+                AssignSingletonInstance();
             }
-
             return _instance;
         }
     }
 
-    public bool IsInitialized { get; set; }
-
+    public bool IsInitialized { get; private set; }
     public UIManager UIManager { get; private set; }
-
     public Player Player { get; private set; }
-
     public Camera PlayerCamera { get; private set; }
 
     private void Awake()
     {
-        if (_instance != null && _instance != this)
+        if (IsDuplicateInstance())
         {
             Destroy(gameObject);
             return;
@@ -41,11 +32,21 @@ public class GameManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
 
-        InitializeReferences();
+        InitializeGameDependencies();
         IsInitialized = true;
     }
 
-    private void InitializeReferences()
+    private static void AssignSingletonInstance()
+    {
+        _instance = FindFirstObjectByType<GameManager>();
+        if (_instance is not null) return;
+        var gameManagerObject = new GameObject("GameManager");
+        _instance = gameManagerObject.AddComponent<GameManager>();
+    }
+
+    private bool IsDuplicateInstance() => _instance != null && _instance != this;
+
+    private void InitializeGameDependencies()
     {
         Player = FindFirstObjectByType<Player>();
         if (Player is null)
@@ -55,7 +56,10 @@ public class GameManager : MonoBehaviour
         }
 
         PlayerCamera = Player.GetComponentInChildren<Camera>();
-        if (PlayerCamera is null) Debug.LogError("GameManager: Player Camera not found!");
+        if (PlayerCamera is null)
+        {
+            Debug.LogError("GameManager: Player Camera not found!");
+        }
 
         UIManager = UIManager.Instance;
     }

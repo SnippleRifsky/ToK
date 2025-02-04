@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 73e40441c3a4eaa459a245a13ce065f8
+guid: 62ed87f4d9a941278900133b14eaa0f9
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
+  - _entityNameplatePrefab: {fileID: 7479259158922584255, guid: c8e665a1ddad26841809abcccda6d78a, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

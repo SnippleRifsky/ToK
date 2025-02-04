@@ -3,21 +3,17 @@ using UnityEngine;
 
 public class CursorRaycastService : MonoBehaviour
 {
+    private const float RaycastMaxDistance = Mathf.Infinity;
     private static CursorRaycastService _instance;
     private Camera _mainCamera;
     private LayerMask _entityLayer;
-    private Dictionary<Collider, Entity> _entityCache = new Dictionary<Collider, Entity>();
+    private Dictionary<Collider, Entity> _entityColliders = new();
 
     public static CursorRaycastService Instance
     {
         get
         {
-            if (_instance is null)
-            {
-                // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-                // Should never be called unless the instance is null
-                CreateInstance();
-            }
+            if (_instance is null) CreateInstance();
             return _instance;
         }
     }
@@ -29,45 +25,51 @@ public class CursorRaycastService : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         _instance = this;
+        InitializeService();
+    }
+
+    private static void CreateInstance()
+    {
+        var serviceObject = new GameObject(nameof(CursorRaycastService));
+        _instance = serviceObject.AddComponent<CursorRaycastService>();
+        DontDestroyOnLoad(serviceObject);
+    }
+
+    private void InitializeService()
+    {
         _entityLayer = LayerMask.GetMask("Entity");
         _mainCamera = GameManager.Instance.PlayerCamera;
     }
-    
-    // ReSharper disable Unity.PerformanceAnalysis
-    private static void CreateInstance()
+
+    private Ray GetCursorRay()
     {
-        var go = new GameObject("CursorRaycastService");
-        _instance = go.AddComponent<CursorRaycastService>();
-        DontDestroyOnLoad(go);
+        return _mainCamera.ScreenPointToRay(Input.mousePosition);
     }
 
     public bool TryGetEntityUnderCursor(out Entity entity)
     {
+        var cursorRay = GetCursorRay();
         entity = null;
-        var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-        
-        return Physics.Raycast(ray, out var hit, Mathf.Infinity, _entityLayer) &&
-               _entityCache.TryGetValue(hit.collider, out entity);
-    }
-    
-    // Called by Entity when it's created/enabled
-    public void RegisterEntity(Entity entity, Collider entityCollider)
-    {
-        _entityCache.TryAdd(entityCollider, entity);
+
+        return Physics.Raycast(cursorRay, out var hit, RaycastMaxDistance, _entityLayer) &&
+               _entityColliders.TryGetValue(hit.collider, out entity);
     }
 
-    // Called by Entity when it's destroyed/disabled
-    public void UnregisterEntity(Collider entityCollider)
+    public void RegisterEntity(Entity entity, Collider collider)
     {
-        if (!_entityCache.ContainsKey(entityCollider)) return;
-        _entityCache.Remove(entityCollider);
+        _entityColliders.TryAdd(collider, entity);
     }
 
-    public bool IsPointerOverEntity()
+    public void UnregisterEntity(Collider collider)
     {
-        var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-        return Physics.Raycast(ray, Mathf.Infinity, _entityLayer);
+        _entityColliders.Remove(collider);
+    }
+
+    public bool IsCursorPointingAtEntity()
+    {
+        var cursorRay = GetCursorRay();
+        return Physics.Raycast(cursorRay, RaycastMaxDistance, _entityLayer);
     }
 }

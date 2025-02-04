@@ -3676,7 +3676,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79713a8b9f68458d9f9c57cbd5ddc84c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIEntityNameplatePrefab: {fileID: 7479259158922584255, guid: c8e665a1ddad26841809abcccda6d78a, type: 3}
 --- !u!1 &823527892
 GameObject:
   m_ObjectHideFlags: 0
@@ -3956,8 +3955,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: XpTracking, Assembly-CSharp
+      - m_Target: {fileID: 226102231}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: AddXp
         m_Mode: 3
         m_Arguments:
@@ -5869,8 +5868,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: XpTracking, Assembly-CSharp
+      - m_Target: {fileID: 226102231}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: AddXp
         m_Mode: 3
         m_Arguments:
