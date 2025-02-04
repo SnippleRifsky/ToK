@@ -42,14 +42,14 @@ public class UIEntityNameplate : MonoBehaviour
         _collider = null;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         EventBus.Unsubscribe<EntityEvents.HealthChanged>(OnHealthChanged);
     }
 
     private void OnHealthChanged(EntityEvents.HealthChanged evt)
     {
-        if (!gameObject.activeSelf || !ReferenceEquals(evt.Entity, _entity)) return;
+        if (!gameObject || !gameObject.activeSelf || !ReferenceEquals(evt.Entity, _entity)) return;
         _healthBar.value = evt.CurrentHealth / evt.MaxHealth;
     }
 
