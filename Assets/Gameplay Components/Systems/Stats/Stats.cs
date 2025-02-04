@@ -14,12 +14,14 @@ public class Stats
 {
     internal readonly BaseStats baseStats;
     internal readonly StatsMediator mediator;
+    internal readonly GameObject owner;
 
-    public Stats(StatsMediator mediator, BaseStats baseStats)
+    public Stats(StatsMediator mediator, BaseStats baseStats, GameObject owner)
     {
         this.mediator = mediator;
         this.baseStats = baseStats;
-        Resources = new ResourceSystem(this);
+        this.owner = owner;
+        Resources = new ResourceSystem(this, owner);
     }
 
     public StatsMediator Mediator => mediator;

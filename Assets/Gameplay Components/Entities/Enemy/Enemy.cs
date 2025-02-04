@@ -9,11 +9,11 @@ public class Enemy : Entity, IHealthProvider
     public float CurrentHealth => Stats.Resources.CurrentHealth;
     public float MaxHealth => Stats.MaxHealth;
 
-    public event Action<float> OnHealthChanged
+    /*public event Action<float> OnHealthChanged
     {
         add => Stats.Resources.OnHealthChanged += value;
         remove => Stats.Resources.OnHealthChanged -= value;
-    }
+    }*/
 
     protected override void Awake()
     {

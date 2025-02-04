@@ -24,7 +24,7 @@ public class Player : Entity, IResourceProvider
     protected override void Awake()
     {
         SetupPlayer();
-        Stats = new Stats(new StatsMediator(), baseStats);
+        Stats = new Stats(new StatsMediator(), baseStats, gameObject);
         _mainCamera = GameManager.Instance.PlayerCamera;
         _entityLayer = LayerMask.GetMask("Entity");
     }
@@ -68,20 +68,8 @@ public class Player : Entity, IResourceProvider
     public float CurrentHealth => Stats.Resources.CurrentHealth;
     public float MaxHealth => Stats.MaxHealth;
 
-    public event Action<float> OnHealthChanged
-    {
-        add => Stats.Resources.OnHealthChanged += value;
-        remove => Stats.Resources.OnHealthChanged -= value;
-    }
-
     public float CurrentResource => Stats.Resources.CurrentResource;
     public float MaxResource => Stats.MaxResource;
-
-    public event Action<float> OnResourceChanged
-    {
-        add => Stats.Resources.OnResourceChanged += value;
-        remove => Stats.Resources.OnResourceChanged -= value;
-    }
 
     public void SpendResource(float amount)
     {
@@ -121,7 +109,7 @@ public class Player : Entity, IResourceProvider
         _currentTarget = newTarget;
 
         newTarget?.OnTargeted();
-        OnTargetChanged?.Invoke(_currentTarget);
+        EventBus.Publish(new EntityEvents.TargetChanged(newTarget));
     }
 
     #endregion

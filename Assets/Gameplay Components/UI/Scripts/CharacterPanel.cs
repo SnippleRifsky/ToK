@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class CharacterPanel : MonoBehaviour
 {
     private Slider _healthBar;
-    private IResourceProvider _resourceProvider;
+    private Player _player;
     private Slider _resourceBar;
 
     private void Awake()
@@ -15,31 +15,26 @@ public class CharacterPanel : MonoBehaviour
         _resourceBar = GetComponentsInChildren<Slider>()
             .FirstOrDefault(slider => slider.gameObject.name == "Resource Bar");
 
-        _resourceProvider = GameManager.Instance.Player.GetComponent<IResourceProvider>();
-        if (_resourceProvider is not null)
-        {
-            _resourceProvider.OnHealthChanged += UpdateHealthBar;
-            _resourceProvider.OnResourceChanged += UpdateResourceBar;
-        }
-        else
-        {
-            Debug.LogWarning("No player data found");
-        }
+        _player = GameManager.Instance.Player;
+        EventBus.Subscribe<EntityEvents.HealthChanged>(OnHealthChanged);
+        EventBus.Subscribe<EntityEvents.ResourceChanged>(OnResourceChanged);
     }
 
     private void OnDestroy()
     {
-        _resourceProvider.OnHealthChanged -= UpdateHealthBar;
-        _resourceProvider.OnResourceChanged -= UpdateResourceBar;
+        EventBus.Unsubscribe<EntityEvents.HealthChanged>(OnHealthChanged);
+        EventBus.Unsubscribe<EntityEvents.ResourceChanged>(OnResourceChanged);
     }
 
-    private void UpdateHealthBar(float newHealth)
+    private void OnHealthChanged(EntityEvents.HealthChanged evt)
     {
-        _healthBar.value = newHealth / _resourceProvider.MaxHealth;
+        if (!ReferenceEquals(evt.Entity, _player)) return;
+        _healthBar.value = evt.CurrentHealth / evt.MaxHealth;
     }
 
-    private void UpdateResourceBar(float newResource)
+    private void OnResourceChanged(EntityEvents.ResourceChanged evt)
     {
-        _resourceBar.value = newResource / _resourceProvider.MaxResource;
+        if ((Player)evt.Entity != _player) return;
+        _resourceBar.value = evt.CurrentResource / evt.MaxResource;
     }
 }
