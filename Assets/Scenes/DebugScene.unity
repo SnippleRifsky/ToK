@@ -2235,8 +2235,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
-  level: 1
-  entityName: Giant Rat
+  level: 0
+  entityName: 
+  enemyConfig: {fileID: 11400000, guid: a3ebb862d8a37e748b6459f0c7e374fd, type: 2}
 --- !u!136 &392179188
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3640,15 +3641,15 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1644948442}
   m_Father: {fileID: 1708532096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 21, y: 10}
-  m_SizeDelta: {x: 455.554, y: 32}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -248, y: -49}
+  m_SizeDelta: {x: 455.55396, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &838963741
 MonoBehaviour:
@@ -4031,6 +4032,7 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
   level: 1
   entityName: Giant Rat
+  enemyConfig: {fileID: 0}
 --- !u!65 &872053083
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4481,8 +4483,8 @@ RectTransform:
   m_GameObject: {fileID: 964199534}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.66, y: 0.66, z: 0.66}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1034039842}
   - {fileID: 676404487}
@@ -4491,7 +4493,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 269.01855, y: -175.80109}
+  m_AnchoredPosition: {x: 183, y: -124}
   m_SizeDelta: {x: 538.046, y: 351.601}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &964199536
@@ -5064,8 +5066,8 @@ RectTransform:
   m_GameObject: {fileID: 1186901096}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.67, y: 0.67, z: 0.67}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1312270885}
   - {fileID: 848298331}
@@ -5078,10 +5080,10 @@ RectTransform:
   - {fileID: 1337306316}
   m_Father: {fileID: 1255880113}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -159.79468, y: -1412.3}
-  m_SizeDelta: {x: 319.5894, y: 465.7214}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -109, y: 157}
+  m_SizeDelta: {x: 319.5894, y: 465.72144}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1186901098
 MonoBehaviour:
@@ -5649,7 +5651,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -7886,17 +7888,17 @@ RectTransform:
   m_GameObject: {fileID: 1708532095}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.66, y: 0.66, z: 0.66}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 838963740}
   - {fileID: 1637756009}
   - {fileID: 384314626}
   m_Father: {fileID: 1255880113}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1651, y: -58.827}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -188, y: -58.827}
   m_SizeDelta: {x: 538.046, y: 117.6537}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1708532097
@@ -9778,6 +9780,7 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
   level: 1
   entityName: Giant Rat
+  enemyConfig: {fileID: 0}
 --- !u!65 &2071797297
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10003,6 +10006,7 @@ MonoBehaviour:
   baseStats: {fileID: 11400000, guid: 9ae4af57073b9b943961187d14b29e47, type: 2}
   level: 1
   entityName: Giant Rat
+  enemyConfig: {fileID: 0}
 --- !u!65 &2130471344
 BoxCollider:
   m_ObjectHideFlags: 0
