@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9104925958288083408}
   - component: {fileID: 266949247020992950}
   m_Layer: 3
-  m_Name: Enemy
+  m_Name: GiantRat
   m_TagString: Entity
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
