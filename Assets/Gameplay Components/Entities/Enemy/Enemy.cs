@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Enemy : Entity, IHealthProvider
+public class Enemy : Entity, IHealthProvider, IXpProvider
 {
     [SerializeField] private EnemyConfig enemyConfig;
     private MeshRenderer _meshRenderer;
@@ -12,6 +12,7 @@ public class Enemy : Entity, IHealthProvider
     public float MaxHealth => Stats.MaxHealth;
 
     private int _xpValue;
+    public int XpValue => _xpValue;
     
     public void Initialize(EnemyConfig config)
     {
@@ -79,12 +80,15 @@ public class Enemy : Entity, IHealthProvider
         GameManager.Instance.UIManager.NameplateManager.HideEntityNameplate(this);
     }
     
-    public override void Die(Entity attacker = null)
+    public override void Die()
     {
-        base.Die(attacker);
-        if (attacker is Player player)
+        if (_isDying) return;
+
+        if (_lastDamageSource is Player player)
         {
-            player.AddXp(_xpValue);
+            EventBus.Publish(new PlayerEvents.ExperienceGained(XpValue, this, player));
         }
+        
+        base.Die();
     }
 }
