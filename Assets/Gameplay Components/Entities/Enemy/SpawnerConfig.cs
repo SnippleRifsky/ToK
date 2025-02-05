@@ -29,7 +29,7 @@ public class SpawnerConfig : ScriptableObject
     public bool AutoSpawn => autoSpawn;
     public float SpawnInterval => spawnInterval;
 
-    public GameObject GetRandomEnemyPrefab() // Changed from GetRandomEnemyConfig
+    public GameObject GetRandomEnemyPrefab()
     {
         if (enemyTypes == null || enemyTypes.Count == 0)
         {

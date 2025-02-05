@@ -13,11 +13,11 @@ public class EnemySpawner : MonoBehaviour
     private readonly List<Enemy> _spawnedEnemies = new();
     private float _nextSpawnTime;
 
-    public bool CanSpawn => spawnerConfig != null && _spawnedEnemies.Count < spawnerConfig.MaxEnemies;
+    public bool CanSpawn => spawnerConfig is not null && _spawnedEnemies.Count < spawnerConfig.MaxEnemies;
 
     private void Awake()
     {
-        if (spawnerConfig == null)
+        if (spawnerConfig is null)
         {
             Debug.LogError("No SpawnerConfig assigned!", this);
             enabled = false;
@@ -29,9 +29,9 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!spawnerConfig.AutoSpawn || !CanSpawn) return;
+        if (!spawnerConfig.AutoSpawn) return;
 
-        if (Time.time >= _nextSpawnTime)
+        if (CanSpawn && Time.time >= _nextSpawnTime)
         {
             TrySpawnEnemy();
             _nextSpawnTime = Time.time + spawnerConfig.SpawnInterval;
