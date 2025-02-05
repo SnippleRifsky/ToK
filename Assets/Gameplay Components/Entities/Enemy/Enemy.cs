@@ -11,25 +11,40 @@ public class Enemy : Entity, IHealthProvider, IXpProvider
     public float CurrentHealth => Stats.Resources.CurrentHealth;
     public float MaxHealth => Stats.MaxHealth;
 
-    private int _xpValue;
-    public int XpValue => _xpValue;
-    
+    public int XpValue { get; private set; }
+
     public void Initialize(EnemyConfig config)
     {
         enemyConfig = config;
         baseStats = config.CreateBaseStats();
         level = config.level;
         entityName = config.entityName;
-        _xpValue = config.xpValue;
+        XpValue = config.xpValue;
         Stats = new Stats(new StatsMediator(), baseStats, gameObject);
+        base.Awake();
 
-        // Apply mesh and material if provided
-        if (config.enemyMesh != null)
+        _meshRenderer = GetComponentInChildren<MeshRenderer>();
+        if (_meshRenderer is null)
         {
-            _meshFilter.mesh = config.enemyMesh;
+            // Create a mesh renderer if one doesn't exist
+            var meshObject = new GameObject("Mesh");
+            meshObject.transform.SetParent(transform);
+            meshObject.transform.localPosition = Vector3.zero;
+            _meshRenderer = meshObject.AddComponent<MeshRenderer>();
+            _meshFilter = meshObject.AddComponent<MeshFilter>();
+        }
+        else
+        {
+            _meshFilter = _meshRenderer.GetComponent<MeshFilter>();
         }
 
-        if (config.enemyMaterial != null)
+        // Now call Awake manually since we're initializing after creation
+        base.Awake();
+
+        // Configure mesh and material
+        if (config.enemyMesh is not null) _meshFilter.mesh = config.enemyMesh;
+
+        if (config.enemyMaterial is not null)
         {
             _meshRenderer.material = config.enemyMaterial;
             _originalMaterialColor = config.enemyMaterial.color;
@@ -38,11 +53,7 @@ public class Enemy : Entity, IHealthProvider, IXpProvider
 
     protected override void Awake()
     {
-        if (enemyConfig != null)
-        {
-            Initialize(enemyConfig);
-        }
-        base.Awake();
+        if (enemyConfig is not null) Initialize(enemyConfig);
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
     }
 
@@ -51,7 +62,7 @@ public class Enemy : Entity, IHealthProvider, IXpProvider
         base.OnEnable();
         EventBus.Subscribe<EntityEvents.DetectionStatusChanged>(OnDetectionStatusChanged);
     }
-    
+
     protected override void OnDisable()
     {
         base.OnDisable();
@@ -79,16 +90,14 @@ public class Enemy : Entity, IHealthProvider, IXpProvider
         if (_isDetected) return;
         GameManager.Instance.UIManager.NameplateManager.HideEntityNameplate(this);
     }
-    
+
     public override void Die()
     {
         if (_isDying) return;
 
         if (_lastDamageSource is Player player)
-        {
             EventBus.Publish(new PlayerEvents.ExperienceGained(XpValue, this, player));
-        }
-        
+
         base.Die();
     }
 }
