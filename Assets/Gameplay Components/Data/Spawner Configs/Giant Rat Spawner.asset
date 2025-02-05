@@ -18,4 +18,4 @@ MonoBehaviour:
   maxEnemies: 5
   spawnRadius: 13.2
   autoSpawn: 1
-  spawnInterval: 120
+  spawnInterval: 5

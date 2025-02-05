@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GiantRat
   m_EditorClassIdentifier: 
   enemyMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
-  enemyMaterial: {fileID: 2100000, guid: cba66c276aed0874091de1c33eb3950d, type: 2}
+  enemyMaterial: {fileID: 2100000, guid: a4b62a69d54e80347bd546999c6d4b9e, type: 2}
   entityName: Giant Rat
   level: 1
   xpValue: 30
