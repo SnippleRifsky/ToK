@@ -127,7 +127,7 @@ public class Player : Entity, IResourceProvider
 
     private void Attack()
     {
-        _currentTarget?.TakeDamage(Stats.Attack);
+        _currentTarget?.TakeDamage(Stats.Attack, this);
     }
 
     public IEnumerable<Entity> FindEntitiesInRange()

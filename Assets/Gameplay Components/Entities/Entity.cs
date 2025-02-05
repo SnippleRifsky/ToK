@@ -50,12 +50,19 @@ public class Entity : MonoBehaviour
 
     #region Health Methods
 
-    public virtual void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage, Entity source)
     {
         if (damage >= Stats.Resources.CurrentHealth)
         {
             Stats.Resources.CurrentHealth = 0;
-            Die();
+            if (source is not null)
+            {
+                Die(source);
+            }
+            else
+            {
+                Die();
+            }
         }
         else
         {
@@ -70,7 +77,7 @@ public class Entity : MonoBehaviour
 
     #endregion
 
-    public virtual void Die()
+    public virtual void Die(Entity attacker = null)
     {
         if (_isDying) return;
         _isDying = true;

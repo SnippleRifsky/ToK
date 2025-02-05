@@ -78,4 +78,13 @@ public class Enemy : Entity, IHealthProvider
         if (_isDetected) return;
         GameManager.Instance.UIManager.NameplateManager.HideEntityNameplate(this);
     }
+    
+    public override void Die(Entity attacker = null)
+    {
+        base.Die(attacker);
+        if (attacker is Player player)
+        {
+            player.AddXp(_xpValue);
+        }
+    }
 }
