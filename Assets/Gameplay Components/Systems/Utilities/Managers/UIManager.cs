@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     public TargetPanel TargetPanel { get; private set; }
     public Canvas UICanvas { get; private set; }
     public NameplateManager NameplateManager { get; private set; }
+    public InventoryPanel InventoryPanel { get; private set; }
 
     private void Awake()
     {
@@ -42,6 +43,8 @@ public class UIManager : MonoBehaviour
 
         NameplateManager = gameObject.AddComponent<NameplateManager>();
         NameplateManager.Initialize();
+        
+        InventoryPanel = TryFindComponent<InventoryPanel>();
     }
 
     private T TryFindComponent<T>() where T : Component

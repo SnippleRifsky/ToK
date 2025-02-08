@@ -1,17 +1,57 @@
-﻿[System.Serializable]
-public class InventorySlot
-{
-    public ItemObject Item;
-    public int Amount;
+﻿using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-    public InventorySlot(ItemObject item, int amount)
+public class InventorySlot : MonoBehaviour, IPointerClickHandler
+{
+    [SerializeField] private Image itemIcon;
+    [SerializeField] private TextMeshProUGUI quantityText;
+    [SerializeField] private Image backgroundImage;
+
+    public bool IsEmpty => Item == null;
+    public InventoryItem Item { get; private set; }
+
+    public int SlotIndex { get; private set; }
+
+    public void Initialize(int index)
     {
-        Item = item;
-        Amount = amount;
+        SlotIndex = index;
+        Clear();
     }
 
-    public void AddToStack(int amount)
+    public void SetItem(InventoryItem item)
     {
-        Amount += amount;
+        Item = item;
+        UpdateVisuals();
+    }
+
+    public void Clear()
+    {
+        Item = null;
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (Item == null)
+        {
+            itemIcon.enabled = false;
+            quantityText.enabled = false;
+            return;
+        }
+
+        itemIcon.enabled = true;
+        itemIcon.sprite = Item.Icon;
+
+        quantityText.enabled = Item.IsStackable;
+        if (Item.IsStackable) quantityText.text = Item.Quantity.ToString();
+    }
+
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Right)
+            EventBus.Publish(new InventoryEvents.ItemInteractionRequested(Item, SlotIndex));
     }
 }
