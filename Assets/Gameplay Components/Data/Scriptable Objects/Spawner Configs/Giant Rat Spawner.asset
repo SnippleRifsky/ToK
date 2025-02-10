@@ -15,7 +15,9 @@ MonoBehaviour:
   enemyTypes:
   - enemyPrefab: {fileID: 88224764406041748, guid: 36addcfcb9c2d4a10be06465f258b83d, type: 3}
     spawnWeight: 1
-  maxEnemies: 5
+  maxEnemies: 8
   spawnRadius: 13.2
+  spawnInterval: 20
   autoSpawn: 1
-  spawnInterval: 5
+  useWaves: 1
+  enemiesPerWave: 8
