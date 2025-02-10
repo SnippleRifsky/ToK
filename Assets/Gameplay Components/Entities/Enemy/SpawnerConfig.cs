@@ -18,16 +18,18 @@ public class SpawnerConfig : ScriptableObject
 
     [SerializeField] private int maxEnemies = 5;
     [SerializeField] private float spawnRadius = 10f;
-
-    [Header("Auto Spawn Settings")] [SerializeField]
-    private bool autoSpawn;
-
     [SerializeField] private float spawnInterval = 5f;
+    [SerializeField] private bool autoSpawn;
+    
+    [Header("Wave Settings")]
+    [SerializeField] private bool useWaves;
+    [SerializeField] private int enemiesPerWave = 5;
 
     public int MaxEnemies => maxEnemies;
     public float SpawnRadius => spawnRadius;
     public bool AutoSpawn => autoSpawn;
     public float SpawnInterval => spawnInterval;
+    public bool UseWaves => useWaves;
 
     public GameObject GetRandomEnemyPrefab()
     {

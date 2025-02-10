@@ -5,7 +5,7 @@ public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private SpawnerConfig spawnerConfig;
 
-    [Header("Debug Settings")] [SerializeField]
+    [Header("Debug Settings"), SerializeField] 
     private bool showSpawnArea = true;
 
     [SerializeField] private Color spawnAreaColor = new(1f, 0f, 0f, 0.2f);
@@ -31,9 +31,19 @@ public class EnemySpawner : MonoBehaviour
     {
         if (!spawnerConfig.AutoSpawn) return;
 
-        if (CanSpawn && Time.time >= _nextSpawnTime)
+        if (Time.time >= _nextSpawnTime)
         {
-            TrySpawnEnemy();
+            if (CanSpawn)
+                switch (spawnerConfig.UseWaves)
+                {
+                    case true:
+                        SpawnToMax();
+                        break;
+                    case false:
+                        TrySpawnEnemy();
+                        break;
+                }
+
             _nextSpawnTime = Time.time + spawnerConfig.SpawnInterval;
         }
     }
