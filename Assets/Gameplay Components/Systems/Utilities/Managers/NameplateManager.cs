@@ -5,17 +5,19 @@ public class NameplateManager : MonoBehaviour
 {
     private Canvas _uiCanvas;
 
-    [SerializeField] private GameObject _entityNameplatePrefab;
+    private readonly string _entityNameplatePrefabPath =
+        "Data/Prefabs/UIEntityNameplate";
+    private GameObject _entityNameplatePrefab;
 
     private readonly Queue<UIEntityNameplate> _nameplatePool = new();
     private readonly Dictionary<Entity, UIEntityNameplate> _activeNameplates = new();
 
     private const float MIN_SCREEN_DEPTH = 0f;
-
     #region Initialization
 
     public void Initialize()
     {
+        _entityNameplatePrefab = Resources.Load<GameObject>(_entityNameplatePrefabPath);
         _uiCanvas = UIManager.Instance.UICanvas;
         EventBus.Subscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
     }
