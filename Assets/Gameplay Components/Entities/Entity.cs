@@ -9,10 +9,11 @@ public class Entity : MonoBehaviour
     [SerializeField] protected string entityName = string.Empty;
 
     protected Entity _target;
+    protected Entity _lastDamageSource;
     private CapsuleCollider _collider;
     public Stats Stats { get; protected set; }
 
-    private bool _isDying;
+    protected bool _isDying;
 
     public int Level
     {
@@ -50,11 +51,16 @@ public class Entity : MonoBehaviour
 
     #region Health Methods
 
-    public virtual void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage, Entity source = null)
     {
         if (damage >= Stats.Resources.CurrentHealth)
         {
             Stats.Resources.CurrentHealth = 0;
+            if (source is not null)
+            {
+                _lastDamageSource = source;
+            }
+
             Die();
         }
         else

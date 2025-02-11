@@ -58,6 +58,7 @@ public class CameraController : MonoBehaviour
             Debug.LogWarning("CameraController: GameManager not initialized!");
         }
 
+        _collisionLayerMask = 1 << LayerMask.NameToLayer("Default");
         _camera = GameManager.Instance.PlayerCamera;
 
         if (_camera == null)
@@ -71,8 +72,8 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
         HandleInput();
-        HandleCameraRotation();
         HandleZoom();
+        HandleCameraRotation();
         DetectOcclusion();
     }
 

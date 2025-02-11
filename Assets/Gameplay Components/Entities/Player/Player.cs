@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : Entity, IResourceProvider
@@ -41,6 +42,13 @@ public class Player : Entity, IResourceProvider
         }
 
         EventBus.Subscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
+        EventBus.Subscribe<PlayerEvents.ExperienceGained>(OnExperienceGained);
+    }
+
+    private void OnExperienceGained(PlayerEvents.ExperienceGained evt)
+    {
+        if (evt.Player != this) return;
+        AddXp(evt.Amount);
     }
 
     protected override void Update()
@@ -77,9 +85,14 @@ public class Player : Entity, IResourceProvider
     public float CurrentResource => Stats.Resources.CurrentResource;
     public float MaxResource => Stats.MaxResource;
 
-    public void SpendResource(float amount)
+    public void DebugTakeDamage(float damage)
     {
-        Stats.Resources.CurrentResource -= amount;
+        TakeDamage(damage);
+    }
+    
+    public void DebugSpendResource(float resource)
+    {
+        Stats.Resources.SpendResource(resource);
     }
 
     #endregion
@@ -127,7 +140,7 @@ public class Player : Entity, IResourceProvider
 
     private void Attack()
     {
-        _currentTarget?.TakeDamage(Stats.Attack);
+        _currentTarget?.TakeDamage(Stats.Attack, this);
     }
 
     public IEnumerable<Entity> FindEntitiesInRange()
@@ -141,8 +154,10 @@ public class Player : Entity, IResourceProvider
         return entities;
     }
 
-    private void OnDestroy()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         EventBus.Unsubscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
+        EventBus.Unsubscribe<PlayerEvents.ExperienceGained>(OnExperienceGained);
     }
 }

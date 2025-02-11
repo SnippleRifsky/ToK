@@ -52,15 +52,16 @@ public class CharacterPanel : MonoBehaviour
 
     private void OnHealthChanged(EntityEvents.HealthChanged evt)
     {
-        if (!ReferenceEquals(evt.Entity, _player)) return;
+        if (evt.Entity is not Player player || player != _player) return;
         _healthBar.value = evt.CurrentHealth / evt.MaxHealth;
     }
 
     private void OnResourceChanged(EntityEvents.ResourceChanged evt)
     {
-        if ((Player)evt.Entity != _player) return;
+        if (evt.Entity is not Player player || player != _player) return;
         _resourceBar.value = evt.CurrentResource / evt.MaxResource;
     }
+    
 
     private void OnLevelingChanged(PlayerEvents.LevelingChanged evt)
     {

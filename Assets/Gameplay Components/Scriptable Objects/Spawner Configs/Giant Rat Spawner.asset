@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d60ff0307dee4469a47ff4fe89fe46e3, type: 3}
+  m_Name: Giant Rat Spawner
+  m_EditorClassIdentifier: 
+  enemyTypes:
+  - enemyPrefab: {fileID: 88224764406041748, guid: 36addcfcb9c2d4a10be06465f258b83d, type: 3}
+    spawnWeight: 1
+  maxEnemies: 8
+  spawnRadius: 10
+  spawnInterval: 300
+  autoSpawn: 1
+  useWaves: 1
+  enemiesPerWave: 8

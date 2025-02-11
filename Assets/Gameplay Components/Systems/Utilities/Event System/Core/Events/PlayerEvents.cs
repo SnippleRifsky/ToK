@@ -17,4 +17,18 @@
             Player = player;
         }
     }
+
+    public readonly struct ExperienceGained
+    {
+        public readonly int Amount;
+        public readonly Entity Source;
+        public readonly Player Player;
+        
+        public ExperienceGained(int amount, Entity source, Player player)
+        {
+            Amount = amount;
+            Source = source;
+            Player = player;
+        }
+    }
 }

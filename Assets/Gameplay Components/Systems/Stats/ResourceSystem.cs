@@ -46,4 +46,9 @@ public class ResourceSystem
         if (CurrentHealth < stats.MaxHealth) CurrentHealth += stats.HealthRegen * deltaTime;
         if (CurrentResource < stats.MaxResource) CurrentResource += stats.ResourceRegen * deltaTime;
     }
+    
+    public void SpendResource(float amount)
+    {
+        CurrentResource -= amount;
+    }
 }
