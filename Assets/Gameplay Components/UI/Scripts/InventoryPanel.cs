@@ -36,7 +36,7 @@ public class InventoryPanel : MonoBehaviour
 
         // Initialize components
         _slots = new List<InventorySlot>();
-        _inventorySystem = new InventorySystem(initialCapacity);
+        _inventorySystem = GameManager.Instance.InventorySystem;
 
         InitializeSlots(initialCapacity);
 

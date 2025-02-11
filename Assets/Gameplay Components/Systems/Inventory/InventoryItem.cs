@@ -11,7 +11,7 @@ public class InventoryItem
     public int MaxStackSize { get; private set; }
     public int Quantity { get; private set; }
 
-    public InventoryItem(string id, string name, string description, Sprite icon, bool isStackable, int maxStackSize)
+    public InventoryItem(string id, string name, string description, Sprite icon, bool isStackable, int maxStackSize, int quantity = 1)
     {
         Id = id;
         Name = name;
@@ -19,7 +19,7 @@ public class InventoryItem
         Icon = icon;
         IsStackable = isStackable;
         MaxStackSize = maxStackSize;
-        Quantity = 1;
+        Quantity = quantity;
     }
 
     public bool CanStackWith(InventoryItem other)
