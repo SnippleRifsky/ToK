@@ -72,8 +72,8 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
         HandleInput();
-        HandleCameraRotation();
         HandleZoom();
+        HandleCameraRotation();
         DetectOcclusion();
     }
 
