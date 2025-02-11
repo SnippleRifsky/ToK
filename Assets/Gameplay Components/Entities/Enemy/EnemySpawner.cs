@@ -108,7 +108,16 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnToMax()
     {
-        while (CanSpawn) TrySpawnEnemy();
+        if (spawnerConfig.UseWaves)
+        {
+            for (var i = 0; i < spawnerConfig.EnemiesPerWave; i++)
+                if (!TrySpawnEnemy())
+                    break;
+        }
+        else
+        {
+            while (CanSpawn) TrySpawnEnemy();
+        }
     }
 
     private void OnDrawGizmos()

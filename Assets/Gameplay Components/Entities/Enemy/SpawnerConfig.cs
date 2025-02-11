@@ -30,6 +30,7 @@ public class SpawnerConfig : ScriptableObject
     public bool AutoSpawn => autoSpawn;
     public float SpawnInterval => spawnInterval;
     public bool UseWaves => useWaves;
+    public int EnemiesPerWave => enemiesPerWave;
 
     public GameObject GetRandomEnemyPrefab()
     {
