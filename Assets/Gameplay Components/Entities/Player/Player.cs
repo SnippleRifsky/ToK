@@ -85,9 +85,14 @@ public class Player : Entity, IResourceProvider
     public float CurrentResource => Stats.Resources.CurrentResource;
     public float MaxResource => Stats.MaxResource;
 
-    public void SpendResource(float amount)
+    public void DebugTakeDamage(float damage)
     {
-        Stats.Resources.CurrentResource -= amount;
+        TakeDamage(damage);
+    }
+    
+    public void DebugSpendResource(float resource)
+    {
+        Stats.Resources.SpendResource(resource);
     }
 
     #endregion
