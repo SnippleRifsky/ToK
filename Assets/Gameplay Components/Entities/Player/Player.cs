@@ -141,6 +141,7 @@ public class Player : Entity, IResourceProvider
     private void Attack()
     {
         _currentTarget?.TakeDamage(Stats.Attack, this);
+        EventBus.Publish<PlayerAnimationEvents.AttackStarted>(new PlayerAnimationEvents.AttackStarted(this));
     }
 
     public IEnumerable<Entity> FindEntitiesInRange()

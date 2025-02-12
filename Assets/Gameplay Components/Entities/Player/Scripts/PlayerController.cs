@@ -73,6 +73,9 @@ public class PlayerController : MonoBehaviour
             Vector3 direction = GetMovementDirection(reference);
             _currentMovement.x = direction.x;
             _currentMovement.z = direction.z;
+            
+            bool isMoving = moveInput != Vector2.zero;
+            EventBus.Publish(new PlayerAnimationEvents.MovementChanged(isMoving, _player));
         }
 
         if (IsOnSteepSlope())
@@ -93,6 +96,11 @@ public class PlayerController : MonoBehaviour
             if (_jumpAction.IsPressed())
             {
                 _currentMovement.y = jumpForce;
+                EventBus.Publish(new PlayerAnimationEvents.JumpStarted(true, _player));
+            }
+            else
+            {
+                EventBus.Publish(new PlayerAnimationEvents.JumpStarted(false, _player));
             }
         }
         else
