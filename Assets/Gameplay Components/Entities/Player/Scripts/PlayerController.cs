@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 _currentAnimationBlend;
     private readonly int _moveXHash = Animator.StringToHash("MoveX");
     private readonly int _moveYHash = Animator.StringToHash("MoveY");
+    private readonly int _jumpHash = Animator.StringToHash("Jump");
 
     private void Start()
     {
@@ -115,6 +116,7 @@ public class PlayerController : MonoBehaviour
             if (_jumpAction.IsPressed())
             {
                 _currentMovement.y = jumpForce;
+                _animator.SetTrigger(_jumpHash);
             }
         }
         else
