@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour
     private InputAction _camLockAction;
 
     // States
-    private bool IsPanning { get; set; }
+    public bool IsPanning { get; private set; }
     public bool IsLocked { get; private set; }
 
     private RaycastHit _hit;

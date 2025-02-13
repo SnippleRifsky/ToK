@@ -86,9 +86,6 @@ public class PlayerController : MonoBehaviour
             Vector3 direction = GetMovementDirection(reference);
             _currentMovement.x = direction.x;
             _currentMovement.z = direction.z;
-            
-            bool isMoving = moveInput != Vector2.zero;
-            _animator.SetBool(IsMoving, isMoving);
         }
 
         if (IsOnSteepSlope())
@@ -129,7 +126,7 @@ public class PlayerController : MonoBehaviour
     private void ProcessPlayerRotation()
     {
         if (_moveAction.ReadValue<Vector2>() == Vector2.zero) return;
-
+        
         Vector3 targetRotation = CalculateRotationTarget();
 
         _playerBody.forward = Vector3.Slerp(
@@ -154,6 +151,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 CalculateRotationTarget()
     {
+        if (!_cameraController.IsLocked) return _playerBody.forward;
         Vector2 moveInput = _moveAction.ReadValue<Vector2>();
         Vector3 targetRotation = new Vector3(_currentMovement.x, 0, _currentMovement.z);
 
