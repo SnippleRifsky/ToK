@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,12 +27,14 @@ public class PlayerController : MonoBehaviour
     private Player _player;
     private Transform _playerBody;
     private Transform _tracker;
+    private Animator _animator;
 
     // Input Actions
     private InputAction _jumpAction;
     private InputAction _moveAction;
 
     // State
+    private StateMachine _stateMachine;
     private Vector3 _currentMovement;
     private RaycastHit _slopeHit;
 
@@ -45,21 +48,31 @@ public class PlayerController : MonoBehaviour
         _cameraController = _player.CameraController;
         _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
         _playerBody = GetComponentInChildren<MeshRenderer>().transform;
+        _animator = GetComponentInChildren<Animator>();
+        _stateMachine = new StateMachine();
+        
+        // Define states
+        var locomotionState = new LocomotionState(this, _animator);
+        var jumpState = new JumpState(this, _animator);
+        
+        // Define transitions
+        At(locomotionState, jumpState, new FuncPredicate(() => _jumpAction.IsPressed() && !_characterController.isGrounded));
+        At(jumpState, locomotionState, new FuncPredicate(() => !_jumpAction.IsPressed() && _characterController.isGrounded));
+        
+        // Set initial state
+        _stateMachine.SetState(locomotionState);
     }
+    
+    private void At(IState from, IState to, IPredicate condition) => _stateMachine.AddTransition(from, to, condition);
+    private void Any(IState to, IPredicate condition) => _stateMachine.AddAnyTransition(to, condition);
 
     private void Update()
     {
-        ProcessMovement();
-    }
-
-    private void ProcessMovement()
-    {
-        ProcessHorizontalMovement();
-        ProcessVerticalMovement();
+        _stateMachine.Update();
         ProcessPlayerRotation();
     }
 
-    private void ProcessHorizontalMovement()
+    public void ProcessHorizontalMovement()
     {
         AlignTrackerToCamera();
 
@@ -75,7 +88,6 @@ public class PlayerController : MonoBehaviour
             _currentMovement.z = direction.z;
             
             bool isMoving = moveInput != Vector2.zero;
-            EventBus.Publish(new PlayerAnimationEvents.MovementChanged(isMoving, _player));
         }
 
         if (IsOnSteepSlope())
@@ -87,7 +99,7 @@ public class PlayerController : MonoBehaviour
         _characterController.Move(_currentMovement * (walkSpeed * Time.deltaTime));
     }
 
-    private void ProcessVerticalMovement()
+    public void ProcessVerticalMovement()
     {
         if (_characterController.isGrounded)
         {
@@ -96,11 +108,6 @@ public class PlayerController : MonoBehaviour
             if (_jumpAction.IsPressed())
             {
                 _currentMovement.y = jumpForce;
-                EventBus.Publish(new PlayerAnimationEvents.JumpStarted(true, _player));
-            }
-            else
-            {
-                EventBus.Publish(new PlayerAnimationEvents.JumpStarted(false, _player));
             }
         }
         else
