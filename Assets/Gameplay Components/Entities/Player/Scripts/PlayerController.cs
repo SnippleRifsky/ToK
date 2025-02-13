@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    private static readonly int IsMoving = Animator.StringToHash("IsMoving");
+
     [Header("Movement Parameters")] 
     [SerializeField] private float walkSpeed = 3f;
 
@@ -13,6 +15,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Rotation Parameters")] 
     [SerializeField] private float smoothTime = 0.2f;
+    
+    [Header("Animation Parameters")]
+    [SerializeField] private float animationSmoothing = 0.1f;
 
     private const float GroundedYVelocity = -0.5f;
     private const float SlopeRayMultiplier = 1.1f;
@@ -34,9 +39,13 @@ public class PlayerController : MonoBehaviour
     private InputAction _moveAction;
 
     // State
-    private StateMachine _stateMachine;
     private Vector3 _currentMovement;
     private RaycastHit _slopeHit;
+    
+    // Animation
+    private Vector2 _currentAnimationBlend;
+    private readonly int _moveXHash = Animator.StringToHash("MoveX");
+    private readonly int _moveYHash = Animator.StringToHash("MoveY");
 
     private void Start()
     {
@@ -49,26 +58,17 @@ public class PlayerController : MonoBehaviour
         _tracker = GameObject.FindGameObjectWithTag("CameraTracker").transform;
         _playerBody = GetComponentInChildren<MeshRenderer>().transform;
         _animator = GetComponentInChildren<Animator>();
-        _stateMachine = new StateMachine();
-        
-        // Define states
-        var locomotionState = new LocomotionState(this, _animator);
-        var jumpState = new JumpState(this, _animator);
-        
-        // Define transitions
-        At(locomotionState, jumpState, new FuncPredicate(() => _jumpAction.IsPressed() && !_characterController.isGrounded));
-        At(jumpState, locomotionState, new FuncPredicate(() => !_jumpAction.IsPressed() && _characterController.isGrounded));
-        
-        // Set initial state
-        _stateMachine.SetState(locomotionState);
     }
-    
-    private void At(IState from, IState to, IPredicate condition) => _stateMachine.AddTransition(from, to, condition);
-    private void Any(IState to, IPredicate condition) => _stateMachine.AddAnyTransition(to, condition);
 
     private void Update()
     {
-        _stateMachine.Update();
+        ProcessMovement();
+    }
+    
+    private void ProcessMovement()
+    {
+        ProcessHorizontalMovement();
+        ProcessVerticalMovement();
         ProcessPlayerRotation();
     }
 
@@ -88,12 +88,22 @@ public class PlayerController : MonoBehaviour
             _currentMovement.z = direction.z;
             
             bool isMoving = moveInput != Vector2.zero;
+            _animator.SetBool(IsMoving, isMoving);
         }
 
         if (IsOnSteepSlope())
         {
             HandleSteepSlopeMovement();
         }
+        
+        // Smoothly interpolate current animation blend
+        _currentAnimationBlend = Vector2.Lerp(_currentAnimationBlend, 
+            moveInput, 
+            Time.deltaTime / animationSmoothing);
+        
+        // Update animator parameters
+        _animator.SetFloat(_moveXHash, _currentAnimationBlend.x);
+        _animator.SetFloat(_moveYHash, _currentAnimationBlend.y);
 
         // Apply movement
         _characterController.Move(_currentMovement * (walkSpeed * Time.deltaTime));
