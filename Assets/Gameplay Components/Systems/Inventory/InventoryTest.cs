@@ -1,8 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+
 
 public class InventoryTest : MonoBehaviour
 {
     private InventorySystem _inventorySystem;
+
+    [SerializeField]private Sprite _swordSprite;
+    [SerializeField]private Sprite _appleSprite;
+    [SerializeField]private Sprite _healthPotionSprite;
+
 
     void Start()
     {
@@ -10,9 +17,9 @@ public class InventoryTest : MonoBehaviour
         _inventorySystem = GameManager.Instance.InventorySystem;
 
         // Create test items
-        InventoryItem sword = new InventoryItem("sword_001", "Sword", "A sharp blade.", null, false, 1);
-        InventoryItem potion = new InventoryItem("potion_001", "Health Potion", "Restores health.", null, true, 10, 8);
-        InventoryItem arrow = new InventoryItem("arrow_001", "Arrow", "Ammunition for bows.", null, true, 50, 50);
+        InventoryItem sword = new InventoryItem("sword_001", "Sword", "A sharp blade.", _swordSprite, false, 1);
+        InventoryItem potion = new InventoryItem("potion_001", "Health Potion", "Restores health.", _healthPotionSprite, true, 10, 8);
+        InventoryItem arrow = new InventoryItem("apple_001", "Apple", "Delicious red apple.", _appleSprite, true, 50, 50);
 
         // Add items to the inventory
         _inventorySystem.AddItem(sword);

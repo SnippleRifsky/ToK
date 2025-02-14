@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] private Image itemIcon;
+    [SerializeField] private Sprite itemIcon;
     [SerializeField] private TextMeshProUGUI quantityText;
     [SerializeField] private Image backgroundImage;
 
@@ -38,13 +39,13 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
     {
         if (Item == null)
         {
-            itemIcon.enabled = false;
+            itemIcon.GetComponent<SpriteRenderer>().enabled = false;
             quantityText.enabled = false;
             return;
         }
 
-        itemIcon.enabled = true;
-        itemIcon.sprite = Item.Icon;
+        itemIcon.GetComponent<SpriteRenderer>().enabled = true;
+        itemIcon = Item.Icon;
 
         quantityText.enabled = Item.IsStackable;
         if (Item.IsStackable) quantityText.text = Item.Quantity.ToString();
