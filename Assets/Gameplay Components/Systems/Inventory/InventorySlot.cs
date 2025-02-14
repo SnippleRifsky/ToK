@@ -1,9 +1,11 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour, IPointerClickHandler
+public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, IEndDragHandler
 {
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI quantityText;
@@ -51,7 +53,39 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Right)
-            EventBus.Publish(new InventoryEvents.ItemInteractionRequested(Item, SlotIndex));
+        if (eventData.button != PointerEventData.InputButton.Right || IsEmpty) return;
+        EventBus.Publish(new InventoryEvents.ItemInteractionRequested(Item, SlotIndex));
+        Debug.Log("Use Item: " + Item.Name);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+        eventData.pointerDrag = gameObject;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+        int fromSlot = SlotIndex;
+        int toSlot = -1;
+        
+        PointerEventData pointerData = new PointerEventData (EventSystem.current)
+        {
+            pointerId = -1,
+        };
+		
+        pointerData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+
+        foreach (var obj in results.Where(obj => obj.gameObject.GetComponent<InventorySlot>() != null))
+        {
+            toSlot = obj.gameObject.GetComponent<InventorySlot>().SlotIndex;
+        }
+        
+        if (fromSlot == toSlot || toSlot == -1) return;
+        GameManager.Instance.InventorySystem.MoveItem(fromSlot, toSlot);
     }
 }
