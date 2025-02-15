@@ -8,9 +8,11 @@ using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] private Sprite itemIcon;
+    [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI quantityText;
     [SerializeField] private Image backgroundImage;
+
+    private GameObject dragImage;
 
     public bool IsEmpty => Item == null;
     public InventoryItem Item { get; private set; }
@@ -39,13 +41,13 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
     {
         if (Item == null)
         {
-            itemIcon.GetComponent<SpriteRenderer>().enabled = false;
+            itemIcon.enabled = false;
             quantityText.enabled = false;
             return;
         }
 
-        itemIcon.GetComponent<SpriteRenderer>().enabled = true;
-        itemIcon = Item.Icon;
+        itemIcon.enabled = true;
+        itemIcon.sprite = Item.Icon;
 
         quantityText.enabled = Item.IsStackable;
         if (Item.IsStackable) quantityText.text = Item.Quantity.ToString();
@@ -63,6 +65,17 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
         eventData.pointerDrag = gameObject;
+        itemIcon.raycastTarget = false;
+        if (dragImage == null)
+        {
+            dragImage = new GameObject("DraggableIcon");
+            var image = dragImage.AddComponent<Image>();
+            dragImage.transform.SetParent(GameManager.Instance.UIManager.UICanvas.transform);
+            image.sprite = itemIcon.sprite;
+        } else
+        { 
+            dragImage.transform.position = Input.mousePosition;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -85,6 +98,8 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
         {
             toSlot = obj.gameObject.GetComponent<InventorySlot>().SlotIndex;
         }
+        
+        Destroy(dragImage);
         
         if (fromSlot == toSlot || toSlot == -1) return;
         GameManager.Instance.InventorySystem.MoveItem(fromSlot, toSlot);
