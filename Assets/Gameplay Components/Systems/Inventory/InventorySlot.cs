@@ -63,6 +63,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (IsEmpty) return;
         if (eventData.button != PointerEventData.InputButton.Left) return;
         eventData.pointerDrag = gameObject;
         itemIcon.raycastTarget = false;
