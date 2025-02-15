@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     public Player Player { get; private set; }
     public Camera PlayerCamera { get; private set; }
     
-    public InventorySystem InventorySystem { get; private set; }
+    public PlayerInventory PlayerInventory { get; private set; }
 
     private void Awake()
     {
@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
         }
         
         // statically assign initial capacity (pull from SavedData later)
-        InventorySystem = new InventorySystem(10); 
+        PlayerInventory = new PlayerInventory(10); 
         
         UIManager = UIManager.Instance;
     }

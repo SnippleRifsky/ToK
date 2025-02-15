@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class InventoryTest : MonoBehaviour
 {
-    private InventorySystem _inventorySystem;
+    private PlayerInventory _playerInventory;
 
     [SerializeField]private Sprite _swordSprite;
     [SerializeField]private Sprite _appleSprite;
@@ -14,7 +14,7 @@ public class InventoryTest : MonoBehaviour
     void Start()
     {
         // Initialize the inventory system with a capacity of 10 slots
-        _inventorySystem = GameManager.Instance.InventorySystem;
+        _playerInventory = GameManager.Instance.PlayerInventory;
 
         // Create test items
         InventoryItem sword = new InventoryItem("sword_001", "Sword", "A sharp blade.", _swordSprite, false, 1);
@@ -22,13 +22,13 @@ public class InventoryTest : MonoBehaviour
         InventoryItem arrow = new InventoryItem("apple_001", "Apple", "Delicious red apple.", _appleSprite, true, 50, 50);
 
         // Add items to the inventory
-        _inventorySystem.AddItem(sword);
-        _inventorySystem.AddItem(potion);
-        _inventorySystem.AddItem(arrow);
+        _playerInventory.AddItem(sword);
+        _playerInventory.AddItem(potion);
+        _playerInventory.AddItem(arrow);
 
         // Manipulate items in the inventory
-        _inventorySystem.RemoveItem(1, 2); // Remove 2 potions from slot 1
-        _inventorySystem.MoveItem(2, 3); // Move arrows from slot 2 to slot 3
+        _playerInventory.RemoveItem(1, 2); // Remove 2 potions from slot 1
+        _playerInventory.MoveItem(2, 3); // Move arrows from slot 2 to slot 3
 
         // Log inventory state to verify
         LogInventoryState();
@@ -36,9 +36,9 @@ public class InventoryTest : MonoBehaviour
 
     private void LogInventoryState()
     {
-        for (int i = 0; i < _inventorySystem.Capacity; i++)
+        for (int i = 0; i < _playerInventory.Capacity; i++)
         {
-            InventoryItem item = _inventorySystem.GetItem(i);
+            InventoryItem item = _playerInventory.GetItem(i);
             if (item != null)
             {
                 Debug.Log($"Slot {i}: {item.Name}, Quantity: {item.Quantity}");

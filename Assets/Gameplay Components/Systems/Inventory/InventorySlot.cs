@@ -102,6 +102,6 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
         Destroy(dragImage);
         
         if (fromSlot == toSlot || toSlot == -1) return;
-        GameManager.Instance.InventorySystem.MoveItem(fromSlot, toSlot);
+        GameManager.Instance.PlayerInventory.MoveItem(fromSlot, toSlot);
     }
 }

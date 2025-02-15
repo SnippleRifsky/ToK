@@ -11,7 +11,7 @@ public class InventoryPanel : MonoBehaviour
 
     private List<InventorySlot> _slots;
     private RectTransform _rectTransform;
-    private InventorySystem _inventorySystem;
+    private PlayerInventory _playerInventory;
 
     private bool _isInitialized = false;
 
@@ -36,7 +36,7 @@ public class InventoryPanel : MonoBehaviour
 
         // Initialize components
         _slots = new List<InventorySlot>();
-        _inventorySystem = GameManager.Instance.InventorySystem;
+        _playerInventory = GameManager.Instance.PlayerInventory;
 
         InitializeSlots(initialCapacity);
 
