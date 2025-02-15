@@ -79,17 +79,14 @@ public class CameraController : MonoBehaviour
 
     private void HandleCameraRotation()
     {
+        
         if (IsPanning || IsLocked)
         {
             _currentX += _lookInput.x * lookSensitivity;
             _currentY += _lookInput.y * lookSensitivity;
             ClampCameraRotation();
-
-            Vector3 direction = new Vector3(0, 0, -_currentZoom);
-            Quaternion rotation = Quaternion.Euler(_currentY, _currentX, 0);
-            _camera.transform.position = transform.position + rotation * direction;
+            CalculateCameraPosition();
         }
-
         _camera.transform.LookAt(transform.position);
     }
 
@@ -97,6 +94,14 @@ public class CameraController : MonoBehaviour
     {
         float zoomInput = _zoomAction.ReadValue<Vector2>().y * ZoomMultiplier;
         _currentZoom = Mathf.Clamp(_currentZoom + zoomInput, minZoom, maxZoom);
+        CalculateCameraPosition();
+    }
+
+    private void CalculateCameraPosition()
+    {
+        Vector3 direction = new Vector3(0, 0, -_currentZoom);
+        Quaternion rotation = Quaternion.Euler(_currentY, _currentX, 0);
+        _camera.transform.position = transform.position + rotation * direction;
     }
 
     private void DetectOcclusion()
