@@ -14,11 +14,13 @@
     
     public readonly struct ItemAdded
     {
+        public IInventorySystem Inventory { get; }
         public InventoryItem Item { get; }
         public int SlotIndex { get; }
             
-        public ItemAdded(InventoryItem item, int slotIndex)
+        public ItemAdded(IInventorySystem inventory, InventoryItem item, int slotIndex)
         {
+            Inventory = inventory;
             Item = item;
             SlotIndex = slotIndex;
         }
@@ -26,10 +28,12 @@
 
     public readonly struct ItemRemoved
     {
+        public IInventorySystem Inventory { get; }
         public int SlotIndex { get; }
             
-        public ItemRemoved(int slotIndex)
+        public ItemRemoved(IInventorySystem inventory, int slotIndex)
         {
+            Inventory = inventory;
             SlotIndex = slotIndex;
         }
     }

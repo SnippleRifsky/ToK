@@ -21,7 +21,7 @@ public class PlayerInventory : IInventorySystem
                 {
                     if (!_items.ContainsKey(i)) continue;
                     _items.Remove(i);
-                    EventBus.Publish(new InventoryEvents.ItemRemoved(i));
+                    EventBus.Publish(new InventoryEvents.ItemRemoved(this, i));
                 }
 
             EventBus.Publish(new InventoryEvents.CapacityChanged(_capacity, oldCapacity));
@@ -50,7 +50,7 @@ public class PlayerInventory : IInventorySystem
 
         // Add the item to the inventory
         _items[slotIndex] = item.Clone();
-        EventBus.Publish(new InventoryEvents.ItemAdded(item, slotIndex));
+        EventBus.Publish(new InventoryEvents.ItemAdded(this, item, slotIndex));
         return true;
     }
 
@@ -60,12 +60,12 @@ public class PlayerInventory : IInventorySystem
         if (item.Quantity <= quantity)
         {
             _items.Remove(slotIndex);
-            EventBus.Publish(new InventoryEvents.ItemRemoved(slotIndex));
+            EventBus.Publish(new InventoryEvents.ItemRemoved(this, slotIndex));
         }
         else
         {
             item.SetQuantity(item.Quantity - quantity);
-            EventBus.Publish(new InventoryEvents.ItemAdded(item, slotIndex));
+            EventBus.Publish(new InventoryEvents.ItemAdded(this, item, slotIndex));
         }
 
         return true;
@@ -88,8 +88,8 @@ public class PlayerInventory : IInventorySystem
                     // Combine stacks
                     toItem.SetQuantity(totalQuantity);
                     _items.Remove(fromSlot);
-                    EventBus.Publish(new InventoryEvents.ItemRemoved(fromSlot));
-                    EventBus.Publish(new InventoryEvents.ItemAdded(toItem, toSlot));
+                    EventBus.Publish(new InventoryEvents.ItemRemoved(this, fromSlot));
+                    EventBus.Publish(new InventoryEvents.ItemAdded(this, toItem, toSlot));
                 }
                 else
                 {
@@ -97,8 +97,8 @@ public class PlayerInventory : IInventorySystem
                     var remainingQuantity = totalQuantity - toItem.MaxStackSize;
                     toItem.SetQuantity(toItem.MaxStackSize);
                     fromItem.SetQuantity(remainingQuantity);
-                    EventBus.Publish(new InventoryEvents.ItemAdded(toItem, toSlot));
-                    EventBus.Publish(new InventoryEvents.ItemAdded(fromItem, fromSlot));
+                    EventBus.Publish(new InventoryEvents.ItemAdded(this, toItem, toSlot));
+                    EventBus.Publish(new InventoryEvents.ItemAdded(this, fromItem, fromSlot));
                 }
 
                 return true;
@@ -107,16 +107,16 @@ public class PlayerInventory : IInventorySystem
             // Swap items
             _items[fromSlot] = toItem;
             _items[toSlot] = fromItem;
-            EventBus.Publish(new InventoryEvents.ItemAdded(toItem, fromSlot));
-            EventBus.Publish(new InventoryEvents.ItemAdded(fromItem, toSlot));
+            EventBus.Publish(new InventoryEvents.ItemAdded(this, toItem, fromSlot));
+            EventBus.Publish(new InventoryEvents.ItemAdded(this, fromItem, toSlot));
             return true;
         }
 
         // Move item to empty slot
         _items.Remove(fromSlot);
         _items[toSlot] = fromItem;
-        EventBus.Publish(new InventoryEvents.ItemRemoved(fromSlot));
-        EventBus.Publish(new InventoryEvents.ItemAdded(fromItem, toSlot));
+        EventBus.Publish(new InventoryEvents.ItemRemoved(this, fromSlot));
+        EventBus.Publish(new InventoryEvents.ItemAdded(this, fromItem, toSlot));
         return true;
     }
 
@@ -160,7 +160,7 @@ public class PlayerInventory : IInventorySystem
                 continue;
 
             slotEntry.Value.SetQuantity(totalQuantity);
-            EventBus.Publish(new InventoryEvents.ItemAdded(slotEntry.Value, slotEntry.Key));
+            EventBus.Publish(new InventoryEvents.ItemAdded(this, slotEntry.Value, slotEntry.Key));
             return true;
         }
 
