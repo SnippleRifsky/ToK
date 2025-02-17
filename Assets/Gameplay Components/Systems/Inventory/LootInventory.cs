@@ -4,7 +4,14 @@ public class LootInventory : IInventorySystem
 {
     private readonly Dictionary<int, InventoryItem> _items;
     private int _capacity;
+    private LootConfig _config;
     
+    public LootInventory(LootConfig config)
+    {
+        _config = config;
+        _items = new Dictionary<int, InventoryItem>();
+        _capacity = _config.Capacity;
+    }
     
     public int Capacity
     {
@@ -24,14 +31,8 @@ public class LootInventory : IInventorySystem
                     EventBus.Publish(new InventoryEvents.ItemRemoved(this, i));
                 }
 
-            EventBus.Publish(new InventoryEvents.CapacityChanged(_capacity, oldCapacity));
+            EventBus.Publish(new InventoryEvents.CapacityChanged(this, _capacity, oldCapacity));
         }
-    }
-
-    public LootInventory()
-    {
-        _items = new Dictionary<int, InventoryItem>();
-        _capacity = 8;
     }
     public bool AddItem(InventoryItem item, int slotIndex = -1)
     {
@@ -83,5 +84,10 @@ public class LootInventory : IInventorySystem
             if (!_items.ContainsKey(i))
                 return i;
         return -1; // No available slot found
+    }
+
+    public bool IsEmpty()
+    {
+        return _items.Count == 0;
     }
 }

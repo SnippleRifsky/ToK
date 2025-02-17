@@ -2,11 +2,13 @@
 {
     public readonly struct CapacityChanged
     {
+        public IInventorySystem Inventory { get; }
         public int NewCapacity { get; }
         public int OldCapacity { get; }
 
-        public CapacityChanged(int newCapacity, int oldCapacity)
+        public CapacityChanged(IInventorySystem inventory,int newCapacity, int oldCapacity)
         {
+            Inventory = inventory;
             NewCapacity = newCapacity;
             OldCapacity = oldCapacity;
         }
@@ -47,6 +49,18 @@
         {
             Item = item;
             SlotIndex = slotIndex;
+        }
+    }
+
+    public readonly struct MoveItem
+    {
+        public int FromSlot { get; }
+        public int ToSlot { get; }
+
+        public MoveItem(int fromSlot, int toSlot)
+        {
+            FromSlot = fromSlot;
+            ToSlot = toSlot;
         }
     }
 }

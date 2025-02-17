@@ -6,6 +6,7 @@ public class InventoryTest : MonoBehaviour
 {
     private PlayerInventory _playerInventory;
 
+    
     [SerializeField]private Sprite _swordSprite;
     [SerializeField]private Sprite _appleSprite;
     [SerializeField]private Sprite _healthPotionSprite;
@@ -17,9 +18,12 @@ public class InventoryTest : MonoBehaviour
         _playerInventory = GameManager.Instance.PlayerInventory;
 
         // Create test items
-        InventoryItem sword = new InventoryItem("sword_001", "Sword", "A sharp blade.", _swordSprite, false, 1);
-        InventoryItem potion = new InventoryItem("potion_001", "Health Potion", "Restores health.", _healthPotionSprite, true, 10, 8);
-        InventoryItem arrow = new InventoryItem("apple_001", "Apple", "Delicious red apple.", _appleSprite, true, 50, 50);
+        InventoryItem sword = ScriptableObject.CreateInstance<InventoryItem>();
+        sword.Initialize("sword_001", "Iron Sword", "A simple iron sword.", _swordSprite, false, 1, 1);
+        InventoryItem potion = ScriptableObject.CreateInstance<InventoryItem>();
+        potion.Initialize("potion_001", "Health Potion", "Restores 50 health points.", _healthPotionSprite, true, 10, 5);
+        InventoryItem arrow = ScriptableObject.CreateInstance<InventoryItem>();
+        arrow.Initialize("arrow_001", "Arrow", "A simple iron arrow.", _appleSprite, true, 100, 20);
 
         // Add items to the inventory
         _playerInventory.AddItem(sword);

@@ -107,7 +107,7 @@ public class Player : Entity, IResourceProvider
     private void UpdateTargeting()
     {
         if (!Input.GetMouseButtonDown(0)) return;
-        if (CursorRaycastService.Instance.TryGetEntityUnderCursor(out var hitEntity))
+        if (GameManager.Instance.CursorRaycastService.TryGetEntityUnderCursor(out var hitEntity))
             switch (hitEntity)
             {
                 case Enemy enemy:

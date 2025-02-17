@@ -81,6 +81,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        //TODO Handle dragging item from one IInventorySystem to another.
         if (eventData.button != PointerEventData.InputButton.Left) return;
         int fromSlot = SlotIndex;
         int toSlot = -1;

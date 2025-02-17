@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     public Canvas UICanvas { get; private set; }
     public NameplateManager NameplateManager { get; private set; }
     public InventoryPanel InventoryPanel { get; private set; }
+    public LootablePanel LootablePanel { get; private set; }
 
     private void Awake()
     {
@@ -45,8 +46,9 @@ public class UIManager : MonoBehaviour
         NameplateManager.Initialize();
         
         InventoryPanel = TryFindComponent<InventoryPanel>();
+        LootablePanel = TryFindComponent<LootablePanel>();
     }
-
+    
     private T TryFindComponent<T>() where T : Component
     {
         var component = FindFirstObjectByType<T>();

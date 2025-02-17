@@ -134,7 +134,7 @@ public class CameraController : MonoBehaviour
 
     private bool ShouldAllowPanning()
     {
-        return !CursorRaycastService.Instance.IsCursorPointingAtEntity() && !EventSystem.current.IsPointerOverGameObject();
+        return !GameManager.Instance.CursorRaycastService.IsCursorPointingAtEntity() && !EventSystem.current.IsPointerOverGameObject();
     }
 
     private void SetCursorLock()

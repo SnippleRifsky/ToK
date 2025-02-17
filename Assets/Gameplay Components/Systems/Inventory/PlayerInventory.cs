@@ -24,7 +24,7 @@ public class PlayerInventory : IInventorySystem
                     EventBus.Publish(new InventoryEvents.ItemRemoved(this, i));
                 }
 
-            EventBus.Publish(new InventoryEvents.CapacityChanged(_capacity, oldCapacity));
+            EventBus.Publish(new InventoryEvents.CapacityChanged(this, _capacity, oldCapacity));
         }
     }
 
@@ -73,6 +73,7 @@ public class PlayerInventory : IInventorySystem
 
     public bool MoveItem(int fromSlot, int toSlot)
     {
+        //TODO prevent item movement when the inventory is not this instance of IInventorySystem
         if (!_items.TryGetValue(fromSlot, out var fromItem)) return false;
         if (toSlot < 0 || toSlot >= _capacity) return false;
 
@@ -174,5 +175,10 @@ public class PlayerInventory : IInventorySystem
             if (!_items.ContainsKey(i))
                 return i;
         return -1; // No available slot found
+    }
+
+    public bool IsEmpty()
+    {
+        return _items.Count == 0;
     }
 }

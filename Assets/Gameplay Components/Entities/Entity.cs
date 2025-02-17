@@ -15,6 +15,8 @@ public class Entity : MonoBehaviour
 
     protected bool _isDying;
 
+    private CursorRaycastService _raycastService;
+
     public int Level
     {
         get => level;
@@ -31,17 +33,18 @@ public class Entity : MonoBehaviour
     {
         Stats = new Stats(new StatsMediator(), baseStats, gameObject);
         _collider = GetComponent<CapsuleCollider>();
+        _raycastService = GameManager.Instance.CursorRaycastService;
     }
 
     protected virtual void OnEnable()
     {
         if (_collider == null) return;
-        CursorRaycastService.Instance.RegisterEntity(this, _collider);
+        _raycastService.RegisterEntity(this, _collider);
     }
 
     protected virtual void OnDisable()
     {
-        if (_collider != null) CursorRaycastService.Instance.UnregisterEntity(_collider);
+        if (_collider != null) _raycastService.UnregisterEntity(_collider);
     }
 
     protected virtual void Update()

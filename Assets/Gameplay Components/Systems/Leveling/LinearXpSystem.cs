@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "LinearXpSystem", menuName = "RPG Components/ Linear Xp System")]
+[CreateAssetMenu(fileName = "LinearXpSystem", menuName = "RPG Components/Linear Xp System")]
 public class LinearXpSystem : BaseXpSystem
 {
     [SerializeField] private float offset = 2f;

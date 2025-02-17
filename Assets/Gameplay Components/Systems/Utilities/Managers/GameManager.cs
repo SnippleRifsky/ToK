@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     public Camera PlayerCamera { get; private set; }
     
     public PlayerInventory PlayerInventory { get; private set; }
+    
+    public CursorRaycastService CursorRaycastService { get; private set; }
 
     private void Awake()
     {
@@ -67,5 +69,7 @@ public class GameManager : MonoBehaviour
         PlayerInventory = new PlayerInventory(10); 
         
         UIManager = UIManager.Instance;
+        
+        CursorRaycastService = CursorRaycastService.Instance;
     }
 }

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryPanel : MonoBehaviour
+public class LootablePanel : MonoBehaviour
 {
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private GridLayoutGroup gridLayoutGroup;
@@ -11,7 +11,7 @@ public class InventoryPanel : MonoBehaviour
 
     private List<InventorySlot> _slots;
     private RectTransform _rectTransform;
-    private PlayerInventory _playerInventory;
+    private IInventorySystem _lootInventory;
 
     private bool _isInitialized = false;
 
@@ -36,16 +36,30 @@ public class InventoryPanel : MonoBehaviour
 
         // Initialize components
         _slots = new List<InventorySlot>();
-        _playerInventory = GameManager.Instance.PlayerInventory;
-
-        InitializeSlots(initialCapacity);
-
-        EventBus.Subscribe<InventoryEvents.CapacityChanged>(OnCapacityChanged);
+        
+        EventBus.Subscribe<LootEvents.LootRequested>(OnLootRequested);
         EventBus.Subscribe<InventoryEvents.ItemAdded>(OnItemAdded);
         EventBus.Subscribe<InventoryEvents.ItemRemoved>(OnItemRemoved);
         
         _isInitialized = true;
         UpdateLayout();
+    }
+
+    private void OnLootRequested(LootEvents.LootRequested evt)
+    {
+        // Exit if the source is not lootable
+        if (evt.Source is not ILootable lootable) return;
+        
+        // Assign the clicked lootable's inventory to the panel
+        _lootInventory = lootable.GetInventory();
+
+        if (_lootInventory.IsEmpty())
+        {
+            // Initialize the slots based on the lootable's inventory capacity
+            InitializeSlots(_lootInventory.Capacity);
+        }
+        _rectTransform.position = Input.mousePosition;
+        gameObject.SetActive(true);
     }
 
     private void OnEnable()
@@ -104,7 +118,7 @@ public class InventoryPanel : MonoBehaviour
 
     private void OnItemAdded(InventoryEvents.ItemAdded evt)
     {
-        if (evt.Inventory != _playerInventory) return;
+        if (evt.Inventory != _lootInventory) return;
         if (evt.SlotIndex >= 0 && evt.SlotIndex < _slots.Count)
         {
             _slots[evt.SlotIndex].SetItem(evt.Item);
@@ -113,7 +127,7 @@ public class InventoryPanel : MonoBehaviour
 
     private void OnItemRemoved(InventoryEvents.ItemRemoved evt)
     {
-        if (evt.Inventory != _playerInventory) return;
+        if (evt.Inventory != _lootInventory) return;
         if (evt.SlotIndex >= 0 && evt.SlotIndex < _slots.Count)
         {
             _slots[evt.SlotIndex].Clear();
@@ -130,7 +144,7 @@ public class InventoryPanel : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventBus.Unsubscribe<InventoryEvents.CapacityChanged>(OnCapacityChanged);
+        EventBus.Unsubscribe<LootEvents.LootRequested>(OnLootRequested);
         EventBus.Unsubscribe<InventoryEvents.ItemAdded>(OnItemAdded);
         EventBus.Unsubscribe<InventoryEvents.ItemRemoved>(OnItemRemoved);
     }

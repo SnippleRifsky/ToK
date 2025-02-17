@@ -72,4 +72,10 @@ public class CursorRaycastService : MonoBehaviour
         var cursorRay = GetCursorRay();
         return Physics.Raycast(cursorRay, RaycastMaxDistance, _entityLayer);
     }
+    
+    public ILootable TryGetLootableUnderCursor()
+    {
+        var cursorRay = GetCursorRay();
+        return Physics.Raycast(cursorRay, out var hit, RaycastMaxDistance) ? hit.collider.GetComponent<ILootable>() : null;
+    }
 }
