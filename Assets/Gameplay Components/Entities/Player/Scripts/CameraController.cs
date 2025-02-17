@@ -122,7 +122,10 @@ public class CameraController : MonoBehaviour
 
     private void HandleInput()
     {
-        IsPanning = ShouldAllowPanning() && _panAction.ReadValue<float>() > 0;
+        if (_panAction.ReadValue<float>() > 0)
+        {
+            IsPanning = ShouldAllowPanning();
+        }
         IsLocked = _camLockAction.ReadValue<float>() > 0;
         _lookInput = _lookAction.ReadValue<Vector2>();
 
