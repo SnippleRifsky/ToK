@@ -71,9 +71,9 @@ public class PlayerInventory : IInventorySystem
         return true;
     }
 
-    public bool MoveItem(int fromSlot, int toSlot)
+    public bool MoveItem(IInventorySystem owner, int fromSlot, int toSlot)
     {
-        //TODO prevent item movement when the inventory is not this instance of IInventorySystem
+        if (owner != this) return false;
         if (!_items.TryGetValue(fromSlot, out var fromItem)) return false;
         if (toSlot < 0 || toSlot >= _capacity) return false;
 

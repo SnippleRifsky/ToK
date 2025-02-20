@@ -32,7 +32,7 @@ public class InventoryTest : MonoBehaviour
 
         // Manipulate items in the inventory
         _playerInventory.RemoveItem(1, 2); // Remove 2 potions from slot 1
-        _playerInventory.MoveItem(2, 3); // Move arrows from slot 2 to slot 3
+        _playerInventory.MoveItem( _playerInventory,2, 3); // Move arrows from slot 2 to slot 3
 
         // Log inventory state to verify
         LogInventoryState();

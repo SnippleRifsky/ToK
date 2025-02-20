@@ -116,7 +116,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
         }
         else
         {
-            GameManager.Instance.PlayerInventory.MoveItem(fromSlot, toSlot);
+            ParentInventorySystem?.MoveItem(ParentInventorySystem, fromSlot, toSlot);
         }
     }
 }
