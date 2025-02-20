@@ -11,6 +11,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI quantityText;
     [SerializeField] private Image backgroundImage;
+    public IInventorySystem ParentInventorySystem { get; private set; }
 
     private GameObject dragImage;
 
@@ -19,8 +20,9 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
 
     public int SlotIndex { get; private set; }
 
-    public void Initialize(int index)
+    public void Initialize(IInventorySystem owner, int index)
     {
+        ParentInventorySystem = owner;
         SlotIndex = index;
         Clear();
     }
@@ -85,6 +87,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
         if (eventData.button != PointerEventData.InputButton.Left) return;
         int fromSlot = SlotIndex;
         int toSlot = -1;
+        IInventorySystem toInventory = null;
         
         PointerEventData pointerData = new PointerEventData (EventSystem.current)
         {
@@ -99,11 +102,21 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler, IDragHandler, 
         foreach (var obj in results.Where(obj => obj.gameObject.GetComponent<InventorySlot>() != null))
         {
             toSlot = obj.gameObject.GetComponent<InventorySlot>().SlotIndex;
+            toInventory = obj.gameObject.GetComponent<InventorySlot>().ParentInventorySystem;
         }
         
         Destroy(dragImage);
         
         if (fromSlot == toSlot || toSlot == -1) return;
-        GameManager.Instance.PlayerInventory.MoveItem(fromSlot, toSlot);
+        if (toInventory != ParentInventorySystem)
+        {
+            if (toInventory is null) return;
+            toInventory.AddItem(Item, toSlot);
+            ParentInventorySystem.RemoveItem(fromSlot, Item.Quantity);
+        }
+        else
+        {
+            GameManager.Instance.PlayerInventory.MoveItem(fromSlot, toSlot);
+        }
     }
 }

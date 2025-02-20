@@ -78,7 +78,7 @@ public class InventoryPanel : MonoBehaviour
         var slotObject = Instantiate(slotPrefab, gridLayoutGroup.transform);
         var slot = slotObject.GetComponent<InventorySlot>();
 
-        slot.Initialize(index);
+        slot.Initialize(_playerInventory, index);
         _slots.Add(slot);
     }
 

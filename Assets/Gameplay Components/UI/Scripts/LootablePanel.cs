@@ -45,6 +45,11 @@ public class LootablePanel : MonoBehaviour
         UpdateLayout();
     }
 
+    private void Start()
+    {
+        gameObject.SetActive(false);
+    }
+
     private void OnLootRequested(LootEvents.LootRequested evt)
     {
         // Exit if the source is not lootable
@@ -92,7 +97,7 @@ public class LootablePanel : MonoBehaviour
         var slotObject = Instantiate(slotPrefab, gridLayoutGroup.transform);
         var slot = slotObject.GetComponent<InventorySlot>();
 
-        slot.Initialize(index);
+        slot.Initialize(_lootInventory, index);
         _slots.Add(slot);
     }
 
