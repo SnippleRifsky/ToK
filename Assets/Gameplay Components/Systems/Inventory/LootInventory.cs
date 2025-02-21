@@ -76,7 +76,6 @@ public class LootInventory : IInventorySystem
     public bool MoveItem(IInventorySystem owner, int fromSlot, int toSlot)
     {
         if (owner != this) return false;
-        //TODO prevent item movement when the inventory is not this instance of IInventorySystem
         if (!_items.TryGetValue(fromSlot, out var fromItem)) return false;
         if (toSlot < 0 || toSlot >= _capacity) return false;
 
