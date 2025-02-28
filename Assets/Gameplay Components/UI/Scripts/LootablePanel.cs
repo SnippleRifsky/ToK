@@ -58,12 +58,11 @@ public class LootablePanel : MonoBehaviour
         // Assign the clicked lootable's inventory to the panel
         _lootInventory = lootable.GetInventory();
 
-        if (_lootInventory.IsEmpty())
-        {
-            // Initialize the slots based on the lootable's inventory capacity
-            InitializeSlots(_lootInventory.Capacity);
-        }
+        // Initialize the slots based on the lootable's inventory capacity
+        InitializeSlots(_lootInventory.Capacity);
+        
         _rectTransform.position = Input.mousePosition;
+        Debug.Log($"LootablePanel: Showing inventory for {evt.Source.GetInventory().GetInventoryGuid().ToString()}");
         gameObject.SetActive(true);
     }
 
@@ -85,10 +84,15 @@ public class LootablePanel : MonoBehaviour
         }
         _slots.Clear();
 
-        // Create new slots
+        // Create new slots and set items
         for (int i = 0; i < count; i++)
         {
             CreateSlot(i);
+            var item = _lootInventory.GetItem(i);
+            if (item is not null)
+            {
+                _slots[i].SetItem(item);
+            }
         }
     }
 

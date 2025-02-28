@@ -21,16 +21,21 @@ public class LootConfig : ScriptableObject
         inventory = new LootInventory(this);
     }
 
-    public void GenerateLoot()
+    public void GenerateLoot(IInventorySystem invSystem)
     {
+        if (invSystem == null)
+        {
+            Debug.LogError("Inventory system is null");
+            return;
+        }
+        inventory = invSystem;
         for (var i = 0; i < Capacity; i++)
         {
             var item = lootTable?.GetRandomItem();
             Debug.Log($"Generated item: {item.Name}");
             if (item == null) continue;
-            Debug.Log($"Adding item: {item.Name} to slot {i} in {inventory}");
-            inventory.AddItem(item);
-            //EventBus.Publish(new InventoryEvents.ItemAdded(Inventory, item, i));
+            Debug.Log($"Adding item: {item.Name} to slot {i} in {inventory.GetInventoryGuid()}");
+            inventory.AddItem(item); 
         }
     }
     

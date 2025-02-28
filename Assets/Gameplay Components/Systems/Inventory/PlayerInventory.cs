@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 
 public class PlayerInventory : IInventorySystem
 {
     private readonly Dictionary<int, InventoryItem> _items;
     private int _capacity;
+    private GUID _guid;
 
     public int Capacity
     {
@@ -32,6 +34,7 @@ public class PlayerInventory : IInventorySystem
     {
         _items = new Dictionary<int, InventoryItem>();
         _capacity = initialCapacity;
+        _guid = GUID.Generate();
     }
 
     public bool AddItem(InventoryItem item, int slotIndex = -1)
@@ -69,6 +72,11 @@ public class PlayerInventory : IInventorySystem
         }
 
         return true;
+    }
+
+    public GUID GetInventoryGuid()
+    {
+        return _guid;
     }
 
     public bool MoveItem(IInventorySystem owner, int fromSlot, int toSlot)
