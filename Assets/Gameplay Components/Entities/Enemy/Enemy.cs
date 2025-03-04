@@ -77,17 +77,11 @@ public class Enemy : Entity, IHealthProvider, IXpProvider
 
     public void OnTargeted()
     {
-        _originalMaterialColor = _meshRenderer.material.color;
-        if (_meshRenderer is null) return;
-        _meshRenderer.material.color = Color.red;
         GameManager.Instance.UIManager.NameplateManager.ShowEntityNameplate(this);
     }
 
     public void OnUntargeted()
     {
-        if (_meshRenderer is null) return;
-        _meshRenderer.material.color = _originalMaterialColor;
-        if (_isDetected) return;
         GameManager.Instance.UIManager.NameplateManager.HideEntityNameplate(this);
     }
 
@@ -96,7 +90,10 @@ public class Enemy : Entity, IHealthProvider, IXpProvider
         if (_isDying) return;
 
         if (_lastDamageSource is Player player)
+        {
             EventBus.Publish(new PlayerEvents.ExperienceGained(XpValue, this, player));
+            //TODO Add loot drop
+        }
 
         base.Die();
     }
