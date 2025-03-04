@@ -36,7 +36,7 @@ public class SpawnerConfig : ScriptableObject
     {
         if (enemyTypes == null || enemyTypes.Count == 0)
         {
-            Debug.LogError($"No enemy types configured in {name}");
+            Debug.LogError($"No enemy types configured.");
             return null;
         }
 
