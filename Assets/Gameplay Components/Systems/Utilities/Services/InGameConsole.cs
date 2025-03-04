@@ -13,8 +13,8 @@ public class InGameConsole : MonoBehaviour
     {
         Application.logMessageReceived += HandleLog;
     }
-
-    private void OnDisable()
+    
+    private void OnDestroy()
     {
         Application.logMessageReceived -= HandleLog;
     }
