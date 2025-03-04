@@ -10,14 +10,28 @@ public class UIEntityNameplate : MonoBehaviour
     private Slider _healthBar;
     private TextMeshProUGUI _levelLabel;
     private TextMeshProUGUI _nameLabel;
+    
+    private void Awake()
+    {
+        _levelLabel = null;
+        _nameLabel = null;
+        foreach (var text in GetComponentsInChildren<TextMeshProUGUI>())
+        {
+            switch (text.gameObject.name)
+            {
+                case "EntityLevelTag":
+                    _levelLabel = text;
+                    break;
+                case "EntityNameTag":
+                    _nameLabel = text;
+                    break;
+            }
+        }
+    }
 
     public void Setup(Entity entity)
     {
         _entity = entity;
-        _levelLabel = GetComponentsInChildren<TextMeshProUGUI>()
-            .FirstOrDefault(text => text.gameObject.name == "EntityLevelTag");
-        _nameLabel = GetComponentsInChildren<TextMeshProUGUI>()
-            .FirstOrDefault(text => text.gameObject.name == "EntityNameTag");
         _healthBar = GetComponent<Slider>();
         if (_entity.Stats is not null)
         {
