@@ -1,25 +1,57 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class NameplateManager : MonoBehaviour
 {
     private Canvas _uiCanvas;
 
-    private readonly string _entityNameplatePrefabPath =
-        "Data/Prefabs/UIEntityNameplate";
+    private readonly string _entityNameplatePrefabPath = "Data/Prefabs/UIEntityNameplate";
     private GameObject _entityNameplatePrefab;
 
-    private readonly Queue<UIEntityNameplate> _nameplatePool = new();
+    private ObjectPool<UIEntityNameplate> _nameplatePool;
     private readonly Dictionary<Entity, UIEntityNameplate> _activeNameplates = new();
 
-    private const float MIN_SCREEN_DEPTH = 0f;
     #region Initialization
 
     public void Initialize()
     {
         _entityNameplatePrefab = Resources.Load<GameObject>(_entityNameplatePrefabPath);
         _uiCanvas = UIManager.Instance.UICanvas;
+
+        _nameplatePool = new ObjectPool<UIEntityNameplate>(
+            CreateNameplate,
+            OnGetNameplate,
+            OnReleaseNameplate,
+            OnDestroyNameplate,
+            false,
+            25,
+            100
+        );
+
         EventBus.Subscribe<EntityEvents.EntityDeathEvent>(OnEntityDestroyed);
+    }
+
+    private UIEntityNameplate CreateNameplate()
+    {
+        var newNameplate = Instantiate(_entityNameplatePrefab, _uiCanvas.transform).GetComponent<UIEntityNameplate>();
+        return newNameplate;
+    }
+
+    private void OnGetNameplate(UIEntityNameplate nameplate)
+    {
+        nameplate.gameObject.SetActive(true);
+    }
+
+    private void OnReleaseNameplate(UIEntityNameplate nameplate)
+    {
+        nameplate.Clear();
+        nameplate.gameObject.SetActive(false);
+    }
+
+    private void OnDestroyNameplate(UIEntityNameplate nameplate)
+    {
+        Destroy(nameplate.gameObject);
     }
 
     #endregion
@@ -30,9 +62,8 @@ public class NameplateManager : MonoBehaviour
     {
         if (_activeNameplates.ContainsKey(entity)) return;
 
-        var nameplate = GetNameplateFromPool();
+        var nameplate = _nameplatePool.Get();
         nameplate.Setup(entity);
-        UpdateNameplatePosition(nameplate, entity);
         _activeNameplates[entity] = nameplate;
 
         if (entity is IHealthProvider healthProvider)
@@ -47,66 +78,8 @@ public class NameplateManager : MonoBehaviour
     {
         if (_activeNameplates.TryGetValue(entity, out var nameplate))
         {
-            ReturnNameplateToPool(nameplate);
+            _nameplatePool.Release(nameplate);
             _activeNameplates.Remove(entity);
-        }
-    }
-
-    #endregion
-
-    #region Helper Methods
-
-    private UIEntityNameplate GetNameplateFromPool()
-    {
-        if (_nameplatePool.Count > 0) return _nameplatePool.Dequeue();
-
-        var newNameplate = Instantiate(_entityNameplatePrefab, _uiCanvas.transform)
-            .GetComponent<UIEntityNameplate>();
-        return newNameplate;
-    }
-
-    private void ReturnNameplateToPool(UIEntityNameplate nameplate)
-    {
-        nameplate.Clear();
-        nameplate.gameObject.SetActive(false);
-        _nameplatePool.Enqueue(nameplate);
-    }
-
-    private void UpdateNameplatePosition(UIEntityNameplate nameplate, Entity entity)
-    {
-        var screenPosition = CalculateScreenPosition(entity, nameplate);
-        nameplate.transform.position = screenPosition;
-        nameplate.gameObject.SetActive(screenPosition.z > MIN_SCREEN_DEPTH);
-    }
-
-    private Vector3 CalculateScreenPosition(Entity entity, UIEntityNameplate nameplate)
-    {
-        var worldPosition = entity.transform.position;
-
-        var entityCollider = nameplate.GetCachedCollider();
-        if (entityCollider is not null) worldPosition.y += entityCollider.bounds.extents.y;
-
-        return GameManager.Instance.PlayerCamera.WorldToScreenPoint(worldPosition);
-    }
-
-    #endregion
-
-    #region Update Logic
-
-    private void Update()
-    {
-        UpdateAllNameplatePositions();
-    }
-
-    private void UpdateAllNameplatePositions()
-    {
-        var playerCamera = GameManager.Instance.PlayerCamera;
-
-        foreach (var kvp in _activeNameplates)
-        {
-            var entity = kvp.Key;
-            var nameplate = kvp.Value;
-            UpdateNameplatePosition(nameplate, entity);
         }
     }
 
@@ -121,7 +94,7 @@ public class NameplateManager : MonoBehaviour
     {
         if (_activeNameplates.TryGetValue(evt.Entity, out var nameplate))
         {
-            Destroy(nameplate.gameObject);
+            _nameplatePool.Release(nameplate);
             _activeNameplates.Remove(evt.Entity);
         }
     }

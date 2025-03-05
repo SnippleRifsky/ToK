@@ -46,6 +46,7 @@ public class UIEntityNameplate : MonoBehaviour
     {
         if (!gameObject.activeSelf) return;
         if (_entity is not null) UpdateUIText();
+        UpdateNameplatePosition();
     }
 
     public void Clear()
@@ -77,5 +78,19 @@ public class UIEntityNameplate : MonoBehaviour
     public CapsuleCollider GetCachedCollider()
     {
         return _collider;
+    }
+    
+    private void UpdateNameplatePosition()
+    {
+        var screenPosition = CalculateScreenPosition();
+        transform.position = screenPosition;
+        gameObject.SetActive(screenPosition.z > 0);
+    }
+
+    private Vector3 CalculateScreenPosition()
+    {
+        var worldPosition = _entity.transform.position;
+        if (_collider is not null) worldPosition.y += _collider.bounds.extents.y;
+        return GameManager.Instance.PlayerCamera.WorldToScreenPoint(worldPosition);
     }
 }
