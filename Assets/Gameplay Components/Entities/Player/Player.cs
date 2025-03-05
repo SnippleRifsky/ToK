@@ -70,8 +70,9 @@ public class Player : Entity, IResourceProvider
             }
         }
 
-        foreach (var entity in _previousEntitiesInRange.Where(entity => !_entitiesInRange.Contains(entity)))
+        foreach (var entity in _previousEntitiesInRange)
         {
+            if (_entitiesInRange.Contains(entity)) continue;
             EventBus.Publish(new EntityEvents.DetectionStatusChanged(entity, false, this));
             UIManager.Instance.NameplateManager.HideEntityNameplate(entity);
         }
@@ -146,10 +147,13 @@ public class Player : Entity, IResourceProvider
     public IEnumerable<Entity> FindEntitiesInRange()
     {
         var entities = new List<Entity>();
-        var hits = Physics.OverlapSphere(transform.position, viewRange, _entityLayer);
-        foreach (var hit in hits)
-            if (hit.TryGetComponent(out Entity entity))
+        var hits = new Collider[10]; // Adjust the size as needed
+        var hitCount = Physics.OverlapSphereNonAlloc(transform.position, viewRange, hits, _entityLayer);
+        for (var i = 0; i < hitCount; i++)
+        {
+            if (hits[i].TryGetComponent(out Entity entity))
                 entities.Add(entity);
+        }
 
         return entities;
     }
