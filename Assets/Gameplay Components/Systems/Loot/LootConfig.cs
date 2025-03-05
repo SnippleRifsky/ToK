@@ -32,9 +32,7 @@ public class LootConfig : ScriptableObject
         for (var i = 0; i < Capacity; i++)
         {
             var item = lootTable?.GetRandomItem();
-            Debug.Log($"Generated item: {item.Name}");
-            if (item == null) continue;
-            Debug.Log($"Adding item: {item.Name} to slot {i} in {inventory.GetInventoryGuid()}");
+            if (item is null) continue;
             inventory.AddItem(item); 
         }
     }

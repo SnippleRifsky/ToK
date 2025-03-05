@@ -6,14 +6,11 @@ public class LootInventory : IInventorySystem
     private readonly Dictionary<int, InventoryItem> _items;
     private int _capacity;
     private readonly LootConfig _config;
-    private GUID _guid;
-
     public LootInventory(LootConfig config)
     {
         _config = config;
         _items = new Dictionary<int, InventoryItem>();
         _capacity = _config.Capacity;
-        _guid = GUID.Generate();
     }
 
     public int Capacity
@@ -69,11 +66,6 @@ public class LootInventory : IInventorySystem
         }
 
         return true;
-    }
-
-    public GUID GetInventoryGuid()
-    {
-        return _guid;
     }
 
     public InventoryItem GetItem(int slotIndex)

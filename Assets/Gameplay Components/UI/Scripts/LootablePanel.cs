@@ -62,7 +62,6 @@ public class LootablePanel : MonoBehaviour
         InitializeSlots(_lootInventory.Capacity);
         
         _rectTransform.position = Input.mousePosition;
-        Debug.Log($"LootablePanel: Showing inventory for {evt.Source.GetInventory().GetInventoryGuid().ToString()}");
         gameObject.SetActive(true);
     }
 

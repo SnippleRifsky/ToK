@@ -19,7 +19,6 @@ public class LootContainer : MonoBehaviour, ILootable
         if (evt.Source != this) return;
         if (!_inventory.IsEmpty()) return;
         _config?.GenerateLoot(_inventory);
-        Debug.Log($"LootContainer: Loot requested from {evt.Source.GetInventory().GetInventoryGuid().ToString()} by {evt.Inventory.ToString()}");
     }
     
     public void OnDestroy()
