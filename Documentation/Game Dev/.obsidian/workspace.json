@@ -1,0 +1,192 @@
+{
+  "main": {
+    "id": "08f3a973dd4928dc",
+    "type": "split",
+    "children": [
+      {
+        "id": "b2486473b8c7715d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "68e71f87e1a3ea0a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Source/Thrones of Kalius/Systems/Inventory/Inventory System Outline.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Inventory System Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c1de7676adb7b3f3",
+    "type": "split",
+    "children": [
+      {
+        "id": "1e23af11adb17e95",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "dcd43432962263f6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "d936e5ad3faa8004",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "7f55a3885e06df69",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "50a17d09d072374b",
+    "type": "split",
+    "children": [
+      {
+        "id": "9bf59819a6fe423f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "88f05cae118090b1",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Character.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Character"
+            }
+          },
+          {
+            "id": "d625534322c3f80b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Character.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Character"
+            }
+          },
+          {
+            "id": "9820b341f462ea48",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "ff424e9c4b7cec1b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Character.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Character"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "68e71f87e1a3ea0a",
+  "lastOpenFiles": [
+    "Source/Thrones of Kalius/Systems/Inventory/Inventory System Outline.md",
+    "Source/Thrones of Kalius/Systems.md",
+    "Source/Thrones of Kalius/Systems/Inventory",
+    "Source/Thrones of Kalius/Systems",
+    "Untitled.canvas",
+    "Source/Thrones of Kalius",
+    "Source/RPG_Prototpe/Private/Character/PlayerCharacter.cpp.md",
+    "Source/RPG_Prototpe/Public/Character/PlayerCharacter.h.md",
+    "Source/RPG_Prototpe/Private/AbilitySystem/Attributes/RPGAttributeSet.h.md",
+    "Source/RPG_Prototpe/Private/Game/PlayerState/RPGPlayerState.cpp.md",
+    "Source/RPG_Prototpe/Public/AbilitySystem/Attributes/RPGAttributeSet.cpp.md",
+    "Source/RPG_Prototpe/Public/Game/PlayerState/RPGPlayerState.h.md",
+    "Source/RPG_Prototpe/Private/Game/GameMode",
+    "Source/RPG_Prototpe/Public/Game/GameMode",
+    "Source/RPG_Prototpe/Private/Data",
+    "Source/RPG_Prototpe/Public/Data",
+    "Source/RPG_Prototpe/Private/AbilitySystem/RPGAbilitySystemComponent.h.md",
+    "Source/RPG_Prototpe/Public/AbilitySystem/RPGAbilitySystemComponent.cpp.md",
+    "Source/RPG_Prototpe/Public/AbilitySystem/Attributes",
+    "Source/RPG_Prototpe/Private/AbilitySystem/Attributes",
+    "Source/RPG_Prototpe/Private/AbilitySystem",
+    "Character.md",
+    "Welcome.md"
+  ]
+}
